@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Datepicker.js</title>
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,400italic,400,600|Roboto+Mono:300,400">
+  <link rel="stylesheet" href="https://rawgit.com/PrismJS/prism/gh-pages/themes/prism.css">
+
+  <link rel="stylesheet" href="../datepicker.css">
+  <script src="../datepicker.js"></script>
+
+  <link rel="stylesheet" href="demo.css">
+</head>
+<body>
+
+  <section class="intro">
+    <div class="container">
+      <header>
+        <h1>Datepicker.js</h1>
+        <p><a href="#examples">Examples</a> | <a href="#options">Options</a> | <a href="#methods">Methods</a> |
+          <a href="https://github.com/wwilsman/datepicker/archive/master.zip" download="datepickerjs.zip">Download</a></p>
+      </header>
+      
+      <div class="section__header">
+        <h2>Quickstart</h2>
+      </div>
+
+      <p>Include the files</p>
+      <pre class="language-html"><code>
+        ...
+        <link rel="stylesheet" href="datepicker.css">
+        <script src="datepicker.js"></script>
+        ...
+      </code></pre>
+
+      <p>Distinguish the Datepickers</p>
+      <pre class="language-html"><code>
+        <input type="text" class="datepicker">
+      </code></pre>
+
+      <p>Initialize Datepicker.js</p>
+      <pre class="language-js"><code>
+        new Datepicker('.datepicker');
+      </code></pre>
+    </div>
+  </section>
+
+  <section class="section" id="examples">
+    <div class="container">
+      <header class="section__header">
+        <h2>Examples</h2>
+      </header>
+
+      <div class="example">
+        <div class="example__desc">
+          <h3>Default</h3>
+          <p>Called on an input with no options.</p>
+        </div>
+        <div class="tabs" data-prefix="simple">
+          <div class="tabs__wrapper">
+            <div class="tabs__content" id="simple-html"><pre class="language-html"><code>
+              <label for="simple">Choose Date</label>
+              <input type="text" id="simple">
+            </code></pre></div>
+            <div class="tabs__content" id="simple-js"><pre class="language-javascript"><code>
+              var simple = new Datepicker('#simple');
+            </code></pre></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="example">
+        <div class="example__desc">
+          <h3>Multiple Dates</h3>
+          <p>Select multiple dates. Click &amp; drag to toggle a range of dates.</p>
+        </div>
+        <div class="tabs" data-prefix="multi">
+          <div class="tabs__wrapper">
+            <div class="tabs__content" id="multi-html"><pre class="language-html"><code>
+              <!-- Also doesn't have to be an input element -->
+              <button id="multi">Choose Dates</button>
+            </code></pre></div>
+            <div class="tabs__content" id="multi-js"><pre class="language-javascript"><code>
+              var multi = new Datepicker('#multi', {
+                multiple: true
+              });
+            </code></pre></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="example">
+        <div class="example__desc">
+          <h3>Inline &amp; Multiple Calendars</h3>
+          <p>Set the main calendar with <code>index</code>. Add a class for custom styles.</p>
+        </div>
+        <div class="tabs tabs--full" data-prefix="inline">
+          <div class="tabs__wrapper">
+            <div class="tabs__content" id="inline-css"><pre class="language-css"><code>
+              .datePicker.custom .datePicker__container {
+                background: #333;
+              }
+
+              .datePicker.custom .datePicker__title,
+              .datePicker.custom .datePicker__day,
+              .datePicker.custom .datePicker__day.is-selected.is-highlighted {
+                background: #333;
+                color: white;
+              }
+
+              .datePicker.custom .datePicker__day:hover {
+                box-shadow: inset 0 0 0 1px #333;
+                background: #444;
+              }
+
+              .datePicker.custom .datePicker__day.is-today {
+                color: #77f;
+              }
+
+              .datePicker.custom .datePicker__day.is-selected,
+              .datePicker.custom .datePicker__day.is-highlighted {
+                box-shadow: inset 0 0 0 1px #333;
+                background: #77f;
+                color: white;
+              }
+            </code></pre></div>
+            <div class="tabs__content" id="inline-html"><pre class="language-html"><code>
+              <input type="hidden" id="inline">
+            </code></pre></div>
+            <div class="tabs__content" id="inline-js"><pre class="language-javascript"><code>
+              var inline = new Datepicker('#inline', {
+                class: 'custom',
+                multiple: true,
+                inline: true,
+                calendars: 3,
+                index: 1
+              });
+            </code></pre></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="example">
+        <div class="example__desc">
+          <h3>Data Attributes &amp; Constraints</h3>
+          <p>Set array values like so: <code>data-without="[2/13/2016,2/14/2016,2/17/2016]"</code>.</p>
+        </div>
+        <div class="tabs" data-prefix="constrained">
+          <div class="tabs__wrapper">
+            <div class="tabs__content" id="constrained-html"><pre class="language-html"><code>
+              <input type="hidden" id="constrained" data-multiple="true" data-inline="true">
+            </code></pre></div>
+            <div class="tabs__content" id="constrained-js"><pre class="language-javascript"><code>
+              var constrained = new Datepicker('#constrained', {
+
+                // 6 days in the past
+                min: (function(){
+                  var date = new Date();
+                  date.setDate(date.getDate() - 6);
+                  return date;
+                })(),
+
+                // 7 days in the future
+                max: (function(){
+                  var date = new Date();
+                  date.setDate(date.getDate() + 7);
+                  return date;
+                })() 
+              });
+            </code></pre></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="options">
+    <div class="container">
+      <div class="section__header">
+        <h2>Options</h2>
+      </div>
+
+      <dl>
+        <dt id="option-class"><strong>class:</strong> <code>""</code> <em>{String}</em></dt>
+        <dd>Additional classes for theming</dd>
+        
+        <dt id="option-open-on"><strong>openOn:</strong> <code>"start"</code> <em>{(String|Date)}</em></dt>
+        <dd>Open the Datepicker to 'first' or 'last' date in selection, or a specific date</dd>
+        
+        <dt id="option-multiple"><strong>multiple:</strong> <code>false</code> <em>{Boolean}</em></dt>
+        <dd>Supress <code>#.show()</code> &amp; <code>#.hide()</code> functionality</dd>
+        
+        <dt id="option-min"><strong>min:</strong> <code>false</code> <em>{(String|Date)}</em></dt>
+        <dd>Minimum date allowed</dd>
+        
+        <dt id="option-max"><strong>max:</strong> <code>false</code> <em>{(String|Date)}</em></dt>
+        <dd>Maximum date allowed</dd>
+        
+        <dt id="option-within"><strong>within:</strong> <code>false</code> <em>{(String[]|Date[])}</em></dt>
+        <dd>Only allow dates within this array</dd>
+        
+        <dt id="option-without"><strong>without:</strong> <code>false</code> <em>{(String[]|Date[])}</em></dt>
+        <dd>Disallow dates within this array</dd>
+        
+        <dt id="option-year-range"><strong>yearRange:</strong> <code>5</code> <em>{Integer}</em></dt>
+        <dd>Range of year picker</dd>
+        
+        <dt id="option-week-start"><strong>weekStart:</strong> <code>0</code> <em>{Integer}</em></dt>
+        <dd>Day to start week on; 0 = Sunday, 1 = Monday, etc...</dd>
+        
+        <dt id="option-calendars"><strong>calendars:</strong> <code>1</code> <em>{Integer}</em></dt>
+        <dd>Number of calendars to draw</dd>
+        
+        <dt id="option-paginate"><strong>paginate:</strong> <code>1</code> <em>{Integer}</em></dt>
+        <dd>How many months to skip when using next/prev (useful for multiple calendars)</dd>
+        
+        <dt id="option-index"><strong>index:</strong> <code>0</code> <em>{Integer}</em></dt>
+        <dd>Index of main calendar when using multiple calendars</dd>
+        
+        <dt id="option-separator"><strong>separator:</strong> <code>","</code> <em>{String}</em></dt>
+        <dd>Separator between values when <code>multiple</code> is true</dd>
+        
+        <dt id="option-serialize"><strong>serialize(<em>{Date}</em>):</strong> <em>{Callback}</em></dt>
+        <dd>Callback to transform a Date into a String</dd>
+        
+        <dt id="option-deserialize"><strong>deserialze(<em>{String}</em>):</strong> <em>{Callback}</em></dt>
+        <dd>Callback to transform a String into a Date</dd>
+        
+        <dt id="option-on-init"><strong>onInit(<em>{Element}</em>):</strong> <em>{Callback}</em></dt>
+        <dd>Called on initialization</dd>
+        
+        <dt id="option-on-update"><strong>onUpdate(<em>{(Date|Date[])}</em>):</strong> <em>{Callback}</em></dt>
+        <dd>Called when datepicker is updated</dd>
+      </dl>
+    </div>
+  </section>
+
+  <section class="section" id="methods">
+    <div class="container">
+      <div class="section__header">
+        <h2>Methods</h2>
+      </div>
+
+      <dl>
+        <dt id="method-set"><strong>#.set(prop<em>, value, noRedraw</em>)</strong></dt>
+        <dd>Set options</dd>
+        <dd><strong>prop <em>{(String|Object)}</em></strong> Option key, or object of properties</dd>
+        <dd><strong>value <em>{Mixed}</em></strong> Value of option (not used if object present)</dd>
+        <dd><strong>noRedraw <em>{Boolean}</em></strong> Do not redraw the calendar afterwards</dd>
+
+        <dt id="method-get"><strong>#.get(key)</strong></dt>
+        <dd>Get an option</dd>
+        <dd><strong>key <em>{String}</em></strong> Option key</dd>
+        
+        <dt id="method-update"><strong>#.update()</strong></dt>
+        <dd>Update the bound element and trigger <code>onUpdate</code> callback</dd>
+        
+        <dt id="method-open"><strong>#.open(<em>date</em>)</strong></dt>
+        <dd>Option the calendar to a specific date (or <code>openOn</code> date)</dd>
+        <dd><strong>date <em>{Date}</em></strong> The date to open to</dd>
+        
+        <dt id="method-show"><strong>#.show()</strong></dt>
+        <dd>Add classes to show the datepicker</dd>
+        
+        <dt id="method-hide"><strong>#.hide()</strong></dt>
+        <dd>Remove classes to hide the datepicker</dd>
+        
+        <dt id="method-next"><strong>#.next(<em>paginate</em>)</strong></dt>
+        <dd>Go to the next month</dd>
+        <dd><strong>paginate <em>{Integer}</em></strong> How many months to skip</dd>
+
+        <dt id="method-prev"><strong>#.prev(<em>paginate</em>)</strong></dt>
+        <dd>Go to the previous month</dd>
+        <dd><strong>paginate <em>{Integer}</em></strong> How many months to skip</dd>
+
+        <dt id="method-goToDate"><strong>#.goToDate(date)</strong></dt>
+        <dd>Go to a specific date</dd>
+        <dd><strong>date <em>{(String|Date)}</em></strong> Date to set the calendar to</dd>
+
+        <dt id="method-hasDate"><strong>#.hasDate(date)</strong></dt>
+        <dd>Check the value for a specific date</dd>
+        <dd><strong>date <em>{(String|Date)}</em></strong> The date to check for</dd>
+
+        <dt id="method-addDate"><strong>#.addDate(date)</strong></dt>
+        <dd>Add a date to the value</dd>
+        <dd><strong>date <em>{(String|Date)}</em></strong> The date to add</dd>
+
+        <dt id="method-removeDate"><strong>#.removeDate(date)</strong></dt>
+        <dd>Remove a date from the value</dd>
+        <dd><strong>date <em>{(String|Date)}</em></strong> The date to remove</dd>
+
+        <dt id="method-toggleValue"><strong>#.toggleValue(date<em>, force</em>)</strong></dt>
+        <dd>Toggle a date selection</dd>
+        <dd><strong>date <em>{(String|Date|String[]|Date[])}</em></strong> Date to toggle</dd>
+        <dd><strong>force <em>{Boolean}</em></strong> Force to selected/deselected</dd>
+
+        <dt id="method-setValue"><strong>#.setValue(date)</strong></dt>
+        <dd>Set the value to a specific date</dd>
+        <dd><strong>date <em>{(String|Date|String[]|Date[])}</em></strong> The date value</dd>
+
+        <dt id="method-getValue"><strong>#.getValue()</strong></dt>
+        <dd>Get the value of the datepicker</dd>
+
+        <dt id="method-dateAllowed"><strong>#.dateAllowed(date)</strong></dt>
+        <dd>Check if a date is allowed in the datepicker</dd>
+        <dd><strong>date <em>{(String|Date)}</em></strong> The date to check</dd>
+        <dd><strong>dim <em>{String}</em></strong> The dimension to check ('year' or 'month')</dd>
+
+        <dt id="method-draw"><strong>#.draw()</strong></dt>
+        <dd>Draw the calendar HTML</dd>
+
+        <dt id="method-render"><strong>#.render(<em>i</em>)</strong></dt>
+        <dd>Render a single month's HTML</dd>
+        <dd><strong>i <em>{Integoer}</em></strong> Offset month to render</dd>
+
+        <dt id="method-toString"><strong>#.toString()</strong></dt>
+        <dd>Basic `toString` method</dd>        
+      </dl>
+    </div>
+  </section>
+
+  <script src="demo.js"></script>
+  <script src="https://rawgit.com/PrismJS/prism/gh-pages/prism.js"></script>
+</body>
+</html>
