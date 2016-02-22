@@ -1,0 +1,22 @@
+{
+  "name": "datepicker.js",
+  "version": "0.0.1-beta1",
+  "description": "A pure JS datepicker",
+  "main": "datepicker.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wwilsman/datepicker.git"
+  },
+  "keywords": [
+    "datepicker",
+    "date",
+    "picker",
+    "pikaday"
+  ],
+  "author": "Wil Wilsman",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/wwilsman/datepicker/issues"
+  },
+  "homepage": "https://github.com/wwilsman/datepicker#readme"
+}
