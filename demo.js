@@ -1,5 +1,16 @@
 (function() {
 
+  $$('a[href^="#"]').forEach(function(a) {
+    a.addEventListener('click', function(e) {
+      smoothScroll($(this.hash).offsetTop);
+      e.preventDefault();
+    })
+  });
+
+  $$('pre > code').forEach(function(code) {
+    code.innerHTML = whiteSpace(code.innerHTML);
+  });
+
   $$('.tabs').forEach(function(el) {
     var pre = el.dataset.prefix;
     var types = ['preview', 'js', 'html', 'css'];
@@ -25,7 +36,9 @@
         var code = $('pre code', tab);
         tab.dataset.type = type;
         
-        if (type == 'js') {
+        if (type == 'html') {
+          code.innerHTML = htmlEntities(code.innerHTML);
+        } else if (type == 'js') {
           var tag = document.createElement('script');
           tag.innerHTML = code.innerHTML;
           preview.appendChild(tag);
@@ -51,25 +64,23 @@
       }
     }, false);
 
-    el.classList.add(el.classList.contains('tabs--full') ? 'show-preview' : 'show-js');
+    var previewFirst = el.classList.contains('tabs--full') || window.innerWidth < 840;
+    el.classList.add(previewFirst ? 'show-preview' : 'show-js');
     prependChild(el.firstElementChild, preview);
     prependChild(el, tabList);
-  });
-
-  $$('pre[class^=language-] > code').forEach(function(code) {
-    code.innerHTML = whiteSpace(code.innerHTML);
-  });
-
-  $$('pre.language-html > code').forEach(function(code) {
-    code.innerHTML = htmlEntities(code.innerHTML);
   });
 
   var resizeTimeout;
   var resizeHandler = function() {
     $$('.tabs__content[data-type=preview]').forEach(function(tab) {
+      tab.style.height = '';
+      tab.style.display = 'block';
+
       $$('.tabs__content', tab.parentNode).forEach(function(t) {
-        t.style.height = tab.scrollHeight + 'px';
+        t.style.height = (window.innerWidth < 840 ? t.offsetHeight : tab.scrollHeight) + 'px';
       });
+
+      tab.style.display = '';
     });
   };
 
@@ -117,5 +128,31 @@
     }
 
     return lines.join('\n');
+  }
+
+  function easeInOutCubic(t) {
+    return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
+  }
+
+  function smoothScroll(pos) {
+    var start = window.pageYOffset;
+    var duration = 500;
+
+    var clock = Date.now();
+    var requestAnimationFrame = window.requestAnimationFrame ||
+        window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame ||
+        function(fn) { window.setTimeout(fn, 15); };
+
+    var step = function() {
+      var elapsed = Date.now() - clock;
+      var position =  elapsed < duration ? start + (pos - start) * easeInOutCubic(elapsed / duration) : pos;
+      window.scroll(0, position);
+
+      if (elapsed < duration) {
+        requestAnimationFrame(step);
+      }
+    }
+
+    step();
   }
 })();

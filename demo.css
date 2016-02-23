@@ -119,23 +119,35 @@ dd + dt {
 .tabs { 
   border: 1px solid #ddd;
   border-radius: 0.25rem; }
+  .tabs.show-preview .tabs__list li[data-type=preview] { 
+    background: white;
+    border-bottom-color: white; }
+  .tabs.show-js .tabs__list li[data-type=js],
+  .tabs.show-html .tabs__list li[data-type=html],
+  .tabs.show-css .tabs__list li[data-type=css] {
+    background: #f5f2f0;
+    border-bottom-color: #f5f2f0; }
+  .tabs.show-preview .tabs__content[data-type=preview],
+  .tabs.show-js .tabs__content[data-type=js],
+  .tabs.show-html .tabs__content[data-type=html],
+  .tabs.show-css .tabs__content[data-type=css] {
+    display: block; }
 .tabs__list {
   display: table;
+  table-layout: fixed;
   width: 100%;
   list-style: none;
   padding: 0;
   margin: 0; }
   .tabs__list li {
+    width: 33.333%;
     background: #eee;
     display: table-cell;
     vertical-align: middle;
     border-bottom: 1px solid #ddd; }
     .tabs__list li:not(:last-child) {
       border-right: 1px solid #ddd; }
-    .tabs__list li:first-child {
-      width: 50%; }
-    .tabs__list li:first-child:nth-last-child(3) ~ * {
-      width: 25%; }
+    .tabs__list li:first-child:nth-last-child(4),
     .tabs__list li:first-child:nth-last-child(4) ~ * {
       width: 16.666%; }
     .tabs__list li a { 
@@ -146,17 +158,6 @@ dd + dt {
       font-size: 0.75rem;
       text-decoration: none;
       text-transform: uppercase; }
-    .tabs__list li[data-type=preview] a {
-      pointer-events: none; }
-  .tabs:not(.tabs--full) .tabs__list li[data-type=preview],
-  .tabs--full.show-preview .tabs__list li[data-type=preview] { 
-    background: white;
-    border-bottom-color: white; }
-  .tabs.show-js .tabs__list li[data-type=js],
-  .tabs.show-html .tabs__list li[data-type=html],
-  .tabs.show-css .tabs__list li[data-type=css] {
-    background: #f5f2f0;
-    border-bottom-color: #f5f2f0; }
 .tabs__wrapper {
   display: table;
   table-layout: fixed;
@@ -170,29 +171,46 @@ dd + dt {
   display: none;
   box-sizing: border-box;
   min-height: 18rem;
-  width: 50%; }
-  .tabs__content[data-type=preview] { 
-    padding: 1rem;
-    display: block;
-    border-right: 1px solid #ddd; }
+  width: 100%; }
+  .tabs__content[data-type=preview] {
+    padding: 1rem; }
   .tabs__content pre { 
     height: 100%; }
-.tabs.show-js .tabs__content[data-type=js],
-.tabs.show-html .tabs__content[data-type=html],
-.tabs.show-css .tabs__content[data-type=css] {
-  display: block; }
 
-.tabs--full .tabs__list li {
-  width: 33.333%; }
-  .tabs--full .tabs__list li:first-child:nth-last-child(4),
-  .tabs--full .tabs__list li:first-child:nth-last-child(4) ~ * {
-    width: 25%; }
-  .tabs--full .tabs__list li[data-type=preview] a { 
-    pointer-events: initial; }
-.tabs--full .tabs__content {
-  width: 100%; }
-  .tabs--full .tabs__content[data-type=preview] {
-    border-right: 0;
-    display: none; }
-  .tabs--full.show-preview .tabs__content[data-type=preview] {
-    display: table-cell; }
+@media screen and (min-width: 52.5rem) {
+  .tabs--full .tabs__list li {
+    width: 33.333%; }
+    .tabs--full .tabs__list li:first-child:nth-last-child(4),
+    .tabs--full .tabs__list li:first-child:nth-last-child(4) ~ * {
+      width: 25%; }
+    .tabs--full .tabs__list li[data-type=preview] a { 
+      pointer-events: initial; }
+  .tabs--full .tabs__content {
+    width: 100%; }
+    .tabs--full .tabs__content[data-type=preview] {
+      border-right: 0;
+      display: none; }
+    .tabs--full.show-preview .tabs__content[data-type=preview] {
+      display: block; }
+  .tabs:not(.tabs--full) .tabs__list li[data-type=preview] { 
+    background: white;
+    border-bottom-color: white; }
+    .tabs:not(.tabs--full) .tabs__list li[data-type=preview] a { 
+      pointer-events: none; }
+    .tabs:not(.tabs--full).show-preview .tabs__list li[data-type=js] { 
+      background: #f5f2f0;
+      border-bottom-color: #f5f2f0; }
+  .tabs:not(.tabs--full).show-preview .tabs__content[data-type=js] { 
+    display: block; }
+  .tabs__list li:first-child {
+    width: 50%; }
+    .tabs__list li:first-child:nth-last-child(3) ~ * { 
+      width: 25%; }
+    .tabs__list li:first-child:nth-last-child(4) ~ * { 
+      width: 16.666%; }
+  .tabs__content {
+    width: 50%; }
+    .tabs__content[data-type=preview] {
+      display: block;
+      border-right: 1px solid #ddd; }
+}
