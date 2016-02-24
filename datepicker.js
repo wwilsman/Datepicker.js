@@ -82,6 +82,42 @@
       '</select>'
     ].join(''));
 
+    // responsive options
+    var origOpts = extend({}, opts);
+    delete origOpts.responsive;
+    this._r = [];
+
+    var mQuery;
+    var queryTimeout;
+    var matchedOpts = {};
+    var queryMatched = false;
+
+    for (mQuery in opts.responsive) {
+      this._r.push(window.matchMedia(mQuery));
+    }
+
+    queryResponsiveOpts();
+    window.addEventListener('resize', queryResponsiveOpts, false);
+    function queryResponsiveOpts() {
+      for (var i = 0; i < self._r.length; i++) {
+        var mq = self._r[i];
+
+        if (mq.matches) {
+          extend(matchedOpts, opts.responsive[mq.media] || {});
+          queryMatched = true;
+        }
+      }
+
+      if (queryTimeout) window.clearTimeout(queryTimeout);
+      queryTimeout = window.setTimeout(setResponsiveOpts, 100);
+    }
+    
+    function setResponsiveOpts() {
+      self.set(queryMatched ? matchedOpts : origOpts);
+      matchedOpts = extend({}, origOpts);
+      queryMatched = false;
+    }
+
     /* Setup DOM */
     
     // let's save this
@@ -129,9 +165,11 @@
     }
     
     // if we click outside of our element, hide it
-    document.addEventListener('mousedown', function(e) {
+    document.addEventListener('mousedown', focusOut, false);
+    document.addEventListener('touchstart', focusOut, false);
+    function focusOut(e) {
       if (!self.node.contains(e.target)) self.hide();
-    }, false);
+    }
     
     // this will help with click & drag selecting
     var mousedown = false;
@@ -285,6 +323,8 @@
     paginate: 1,
     index: 0,
     separator: ',',
+
+    responsive: {},
     
     serialize: function(date) {
       return date.toLocaleDateString();
@@ -364,10 +404,12 @@
     set: function(key, val, noRedraw) {
       var o = this._o;
 
+      if (!key) return;
+
       // iterate over the object
       if (typeof key === 'object') {
         for (var k in key) this.set(k, key[k], true);
-        if (!noRedraw) this.draw();
+        if (!noRedraw && this.container) this.draw();
         return o;
       }
 
@@ -395,8 +437,8 @@
 
         // if needed, deserialize openOn
         case 'openOn':              
-          if (typeof val == 'string' && val != 'first' && val != 'last') {
-            val = transform(val, o.deserialize, this);
+          if (typeof val == 'string' && !/^(first|last|today)$/.test(val)) {
+            val = o.deserialize.call(this, val);
             if (!isValidDate(val)) val = new Date();
           }
           break;
@@ -405,13 +447,21 @@
         case 'paginate':
         case 'calendars':
           val = Math.max(val, 1);
-          this.node && toggleClass(this.node, 'is-multiple', val > 0);
+          if (key === 'calendars' && this.node) {
+            toggleClass(this.node, 'is-multiple', val > 1);
+          }
           break;
         case 'weekstart':
           val = Math.min(Math.max(val, 0), 6);
           break;
         case 'index':
           val = Math.min(Math.max(val, 0), o.calendars);
+          break;
+
+        // responsive object always extends old one
+        case 'responsive':
+          if (val[key]) delete val[key];
+          val = extend({}, this.get(key), val);
           break;
 
         // i18n
@@ -451,7 +501,7 @@
 
       // actually set the value and optionally redraw
       if (key.indexOf('.') < 0) this._o[key] = val;
-      if (!noRedraw) this.draw();
+      if (!noRedraw && this.container) this.draw();
       return val;
     },
 
@@ -501,12 +551,12 @@
       if (typeof date === 'string') {
         date = date.toLowerCase();
         
-        // first, last, or deserialize
+        // first, last, deserialize, or open to today later
         if (date === 'first' && dates.length) {
           date = dates[0];
         } else if (date === 'last' && dates.length) {
           date = dates.slice(-1);
-        } else {
+        } else if (date !== 'today') {
           date = this._o.deserialize(date);
         }
       }
@@ -967,7 +1017,7 @@
 
   function extend(obj) {
     var other = Array.prototype.slice.call(arguments, 1);
-    
+
     for (var i = 0; i < other.length; i++) {
       for (var p in other[i]) {
         if (obj[p] !== undefined && typeof other[i][p] === 'object' && other[i][p] !== null && other[i][p].nodeName === undefined) {
