@@ -153,7 +153,7 @@
     if (isInput) {
       elem.addEventListener('focus', function() {
         self.open();
-      }, false);
+      });
     } else {
       elem.addEventListener('click', function() {
         if (hasClass(self.node, 'is-visible')) {
@@ -165,37 +165,32 @@
     }
     
     // if we click outside of our element, hide it
-    document.addEventListener('mousedown', focusOut, false);
-    document.addEventListener('touchstart', focusOut, false);
-    function focusOut(e) {
+    document.addEventListener('mousedown', function(e) {
       if (!self.node.contains(e.target)) self.hide();
-    }
+    });
     
     // this will help with click & drag selecting
     var mousedown = false;
-    var startNode = null;
+    var startNode, startDate;
     var selection = [];
     
     // don't actually select text, please
     this.node.onselectstart = function() { return false; };
     
-    // when we mousedown on (or touch) a "date node," highlight it and start the selection
-    this.node.addEventListener('mousedown', startSelectionHandler, false);
-    this.node.addEventListener('touchstart', startSelectionHandler, false);
-    function startSelectionHandler(e) {
+    // when we mousedown on a "date node," highlight it and start the selection
+    this.node.addEventListener('mousedown', function(e) {
       var dateNode = closest(e.target, '[data-date]', this);
 
       if (dateNode) {
         addClass(dateNode, 'is-highlighted');
+        startDate = opts.deserialize(dateNode.dataset.date);
         startNode = dateNode;
         mousedown = true;
       }
-    }
+    });
     
     // we've finished the potential selection
-    this.node.addEventListener('mouseup', endSelectionHandler, false);
-    this.node.addEventListener('touchend', endSelectionHandler, false);
-    function endSelectionHandler(e) {
+    this.node.addEventListener('mouseup', function(e) {
 
       // remove the highlighting
       $$('[data-date].is-highlighted', self.container).forEach(function(el) {
@@ -207,7 +202,7 @@
 
         // make sure we've got at least one
         if (startNode && !selection.length) {
-          selection.push(startNode.dataset.date);
+          selection.push(opts.serialize(startDate));
         }
 
         // actually make the selection
@@ -233,17 +228,17 @@
       // reset this stuff
       mousedown = false;
       startNode = null;
+      startDate = null;
       selection = [];
-    }
+    });
     
     // we're making a selection, and we're allowed to; highlight them
-    this.node.addEventListener('mouseover', makeSelectionHandler, false);
-    this.node.addEventListener('touchmove', makeSelectionHandler, false);
-    function makeSelectionHandler(e) {
+    this.node.addEventListener('mouseover', function(e) {
       var dateNode = closest(e.target, '[data-date]', this);   
       if (opts.multiple && dateNode && mousedown && startNode != e.target) {
-        selection = dateRange(startNode.dataset.date, dateNode.dataset.date);
-        selection = transform(selection, opts.serialize);
+        var date = opts.deserialize(dateNode.dataset.date);
+        selection = transform(dateRange(startDate, date), opts.serialize);
+        selection = [].concat(selection);
 
         $$('[data-date].is-highlighted', self.container).forEach(function(el) {
           removeClass(el, 'is-highlighted');
@@ -255,7 +250,7 @@
           });
         });
       }
-    }
+    });
     
     // what did you click?
     this.node.addEventListener('click', function(e) {
@@ -995,8 +990,8 @@
   }
     
   function dateRange(start, end) {
-    start = new Date(start);
-    end = new Date(end);
+    start = new Date(start.getTime());
+    end = new Date(end.getTime());
     var date = start;
     
     if (start > end) {
