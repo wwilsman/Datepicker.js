@@ -326,7 +326,6 @@
     },
     
     deserialize: function(str) {
-      if (str instanceof Date) return str;      
       return new Date(str);
     },
 
@@ -427,7 +426,7 @@
         case 'within':
         case 'without':
           if (!!val && !val.length) val = false;
-          if (!!val) val = [].concat(transform(val, o.deserialize, this)).filter(isValidDate);
+          if (!!val) val = [].concat(setToStart(transform(val, o.deserialize, this))).filter(isValidDate);
           break;
 
         // if needed, deserialize openOn
@@ -514,22 +513,15 @@
      */
     update: function() {
       var opts = this._o;
-      var value = this.getValue();
 
-      var elemValue = [].concat(value || []).map(function(date) {
-        return !!date ? opts.serialize(date) : false;
-      }).filter(function(str) {
-        return !!str;
-      }).join(opts.separator);
-
-      if (!this._isInput) {
-        this.elem.dataset.value = elemValue;
+      if (this._isInput) {
+        this.elem.value = this.toString();
       } else {
-        this.elem.value = elemValue;
+        this.elem.dataset.value = this.toString();
       }
 
       if (opts.onUpdate) {
-        opts.onUpdate.call(this, value);
+        opts.onUpdate.call(this, this.getValue());
       }
     },
     
@@ -550,7 +542,7 @@
         if (date === 'first' && dates.length) {
           date = dates[0];
         } else if (date === 'last' && dates.length) {
-          date = dates.slice(-1);
+          date = dates[dates.length - 1];
         } else if (date !== 'today') {
           date = this._o.deserialize(date);
         }
@@ -864,7 +856,7 @@
      * Basic `toString` method
      */
     toString: function() {
-      var parts = transform(this.getValue(), this._o.serialize, this);
+      var parts = transform((this.getValue() || []), this._o.serialize, this);
       return [].concat(parts).join(this._o.separator);
     }
   };
