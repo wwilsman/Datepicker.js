@@ -14,9 +14,12 @@
     "pikaday"
   ],
   "author": "Wil Wilsman",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/wwilsman/datepicker/issues"
   },
-  "homepage": "https://github.com/wwilsman/datepicker#readme"
+  "homepage": "https://wwilsman.github.io/datepicker",
+  "scripts": {
+    "test": "phantomjs tests/run-jasmine.js tests/index.html"
+  }
 }
