@@ -165,14 +165,25 @@ describe('Datepicker', function() {
 
   describe('#hide', function() {
 
-    it('should remove "is-visible" class', function() {
+    it('should remove "is-visible" and positioning classes', function() {
+      datepicker.node.style.position = 'fixed';
+      datepicker.node.style.bottom = datepicker.node.style.right = 0;
+      document.body.appendChild(datepicker.node);
+
       datepicker.show();
-      
+
       expect(datepicker.node).toHaveClass('is-visible');
-      
+      expect(datepicker.container).toHaveClass('position-right');
+      expect(datepicker.container).toHaveClass('position-top');
+
       datepicker.hide();
 
       expect(datepicker.node).not.toHaveClass('is-visible');
+      expect(datepicker.container).not.toHaveClass('position-right');
+      expect(datepicker.container).not.toHaveClass('position-top');
+
+      datepicker.node.removeAttribute('style');
+      document.body.removeChild(datepicker.node);
     });
   });
 
@@ -424,7 +435,11 @@ describe('Datepicker', function() {
     });
 
     it('should just check the month', function() {
-      datepicker.set('within', [dates[0]]);
+      datepicker.set({
+        within: [dates[0]],
+        min: dates[0],
+        max: dates[0]
+      });
 
       date.setMonth(dates[0].getMonth());
       if (dates[0].getDate() > 1) date.setDate(1);
@@ -435,7 +450,11 @@ describe('Datepicker', function() {
     });
 
     it('should just check the year', function() {
-      datepicker.set('within', [dates[0]]);
+      datepicker.set({
+        within: [dates[0]],
+        min: dates[0],
+        max: dates[0]
+      });
 
       date.setFullYear(dates[0].getFullYear() + 1);
 

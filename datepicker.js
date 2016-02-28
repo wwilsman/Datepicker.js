@@ -125,12 +125,12 @@
 
     // create the datepicker element
     this.node = document.createElement('div');
-    addClass(this.node, 'datePicker' + (opts.inline ? ' ' : ' has-popup ') + opts.class);
+    addClass(this.node, 'datepicker' + (opts.inline ? ' ' : ' has-popup ') + opts.class);
     if (opts.calendars > 1) addClass(this.node, 'is-multiple');
 
     // create the container element
     this.container = document.createElement('div');
-    addClass(this.container, 'datePicker__container');
+    addClass(this.container, 'datepicker__container');
     
     // insert our element into the dom
     if (elem.parentNode) elem.parentNode.insertBefore(this.node, elem);
@@ -340,9 +340,9 @@
     
     templates: {
       calendar: [
-        '<div class="datePicker__cal">',
+        '<div class="datepicker__cal">',
           '<%= renderHeader() %>',
-          '<table class="datePicker__table">',
+          '<table class="datepicker__table">',
             '<thead>',
               '<tr>',
                 '<% for (var i = 0; i < 7; i++) { %>',
@@ -353,7 +353,7 @@
             '<tbody>',
               '<% for (var i = 0; i < days.length; i++) { %>',
                 '<%= (i % 7 == 0) ? "<tr>" : "" %>',
-                  '<td><%= renderDay(days[i]) %></td>',
+                  '<%= renderDay(days[i]) %>',
                 '<%= (i % 7 == 6) ? "</tr>" : "" %>',
               '<% } %>',
             '</tbody>',
@@ -362,25 +362,25 @@
       ].join(''),
       
       header: [
-        '<header class="datePicker__header">',
-          '<% if (first) { %><a class="datePicker__prev <%= (prev) ? "" : "is-disabled" %>" data-prev></a><% } %>',
-          '<span class="datePicker__title"><%= month %><%= renderSelect("month") %></span>',
-          '<span class="datePicker__title"><%= year %><%= renderSelect("year") %></span>',
+        '<header class="datepicker__header">',
+          '<% if (first) { %><a class="datepicker__prev <%= (prev) ? "" : "is-disabled" %>" data-prev></a><% } %>',
+          '<span class="datepicker__title"><%= month %><%= renderSelect("month") %></span>',
+          '<span class="datepicker__title"><%= year %><%= renderSelect("year") %></span>',
           '<% if (index == 3 || last && index < 3) { %>',
-            '<a class="datePicker__next <%= (next) ? "" : "is-disabled" %>" data-next></a>',
+            '<a class="datepicker__next <%= (next) ? "" : "is-disabled" %>" data-next></a>',
           '<% } %>',
         '</header>'
       ].join(''),
       
       day: [
-        '<% var cls = ["datePicker__day"]; %>',
+        '<% var cls = ["datepicker__day"]; %>',
         '<% if (isSelected) cls.push("is-selected"); %>',
         '<% if (isDisabled) cls.push("is-disabled"); %>',
         '<% if (!isThisMonth) cls.push("is-otherMonth"); %>',
         '<% if (isToday) cls.push("is-today"); %>',
-        '<div class="<%= cls.join(" ") %>" data-date="<%= date %>">',
-          '<span class="datePicker__daynum"><%= daynum %></span>',
-        '</div>'
+        '<td class="<%= cls.join(" ") %>" data-date="<%= date %>"><div>',
+          '<span class="datepicker__daynum"><%= daynum %></span>',
+        '</div></td>'
       ].join('')
     }
   };
@@ -574,7 +574,7 @@
 
         rect = this.container.getBoundingClientRect();
         var fitLeft = rect.right >= rect.width;
-        var fitTop = rect.top > rect.height;
+        var fitTop = rect.bottom > rect.height;
         toggleClass(this.container, 'position-right', posRight && fitLeft);
         toggleClass(this.container, 'position-top', posTop && fitTop);
         if (posTop & !fitTop) this.container.style.top = elBottom + 'px';
@@ -587,7 +587,7 @@
     hide: function() {
       if (!this._o.inline) {
         removeClass(this.node, 'is-visible')
-        removeClass(this.container, 'position-right position-left');
+        removeClass(this.container, 'position-right position-top');
       }
     },
     
@@ -710,7 +710,19 @@
       var opts = this._o;
       date = setToStart(opts.deserialize(date));
       dim = (dim == 'month' || dim == 'year') ? dim : undefined;
-      return ((!opts.min || date >= opts.min) && (!opts.max || date <= opts.max) &&
+
+      if (dim == 'month') {
+        var aboveMin = (!opts.min || date.getMonth() >= opts.min.getMonth());
+        var belowMax = (!opts.max || date.getMonth() <= opts.max.getMonth());
+      } else if (dim == 'year') {
+        var aboveMin = (!opts.min || date.getFullYear() >= opts.min.getFullYear());
+        var belowMax = (!opts.max || date.getFullYear() <= opts.max.getFullYear());
+      } else {
+        var aboveMin = (!opts.min || date >= opts.min);
+        var belowMax = (!opts.max || date <= opts.max);
+      }
+
+      return (aboveMin && belowMax &&
         (!opts.without || !dateInArray(date, opts.without, dim)) &&
         (!opts.within || dateInArray(date, opts.within, dim)));
     },
