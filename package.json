@@ -1,8 +1,8 @@
 {
   "name": "datepicker.js",
-  "version": "0.0.1-beta1",
+  "version": "0.0.1-beta2",
   "description": "A pure JS datepicker",
-  "main": "datepicker.js",
+  "main": "dist/datepicker.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/wwilsman/datepicker.git"
@@ -20,6 +20,14 @@
   },
   "homepage": "https://wwilsman.github.io/datepicker",
   "scripts": {
-    "test": "phantomjs tests/run-jasmine.js tests/index.html"
+    "test": "phantomjs tests/run-jasmine.js tests/index.html",
+    "build": "webpack"
+  },
+  "devDependencies": {
+    "babel-core": "^6.13.0",
+    "babel-loader": "^6.2.4",
+    "babel-preset-es2015": "^6.13.0",
+    "babel-preset-stage-0": "^6.5.0",
+    "webpack": "^1.13.1"
   }
 }
