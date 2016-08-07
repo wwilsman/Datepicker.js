@@ -1,13 +1,10 @@
 let webpack = require('webpack')
 
 module.exports = {
-  entry: {
-    'datepicker': './src/datepicker.js',
-    'datepicker.min': './src/datepicker.js',
-  },
+  entry: './src',
   output: {
     path: './dist',
-    filename: '[name].js',
+    filename: 'datepicker.js',
   },
   module: {
     loaders: [{
@@ -18,8 +15,6 @@ module.exports = {
     }],
   },
   plugins: [
-    new webpack.optimize.UglifyJsPlugin({
-      include: /\.min\.js$/
-    })
+    new webpack.optimize.UglifyJsPlugin()
   ]
 }
