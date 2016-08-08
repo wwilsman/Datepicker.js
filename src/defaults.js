@@ -34,10 +34,11 @@ export default {
   },
 
   classNames: {
-    default: 'datepicker',
-    inline: 'datepicker is-inline',
-    multiple: 'datepicker is-multiple',
-    wrapper: 'datepicker__wrapper'
+    base: 'datepicker',
+    wrapper: 'datepicker__wrapper',
+    inline: 'is-inline',
+    selected: 'is-selected',
+    highlight: 'is-highlighted'
   },
 
   templates: {
@@ -61,17 +62,17 @@ export default {
       '<table class="datepicker__cal">',
         '<thead>',
           '<tr>',
-            '<% weekdaysShort.map(function(name) { %>',
+            '<% weekdaysShort.forEach(function(name) { %>',
               '<th><%= name %></th>',
-            '<% }) %>',
+            '<% }); %>',
           '</tr>',
         '</thead>',
         '<tbody>',
-          '<% days.map(function(day, i) { %>',
+          '<% days.forEach(function(day, i) { %>',
             '<%= (i % 7 == 0) ? "<tr>" : "" %>',
               '<%= renderDay(day) %>',
             '<%= (i % 7 == 6) ? "</tr>" : "" %>',
-          '<% }) %>',
+          '<% }); %>',
         '</tbody>',
       '</table>',
     ].join(''),
