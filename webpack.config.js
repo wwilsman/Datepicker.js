@@ -1,10 +1,12 @@
 let webpack = require('webpack')
 
 module.exports = {
-  entry: './src',
+  entry: './index.js',
   output: {
     path: './dist',
     filename: 'datepicker.js',
+    library: 'Datepicker',
+    libraryTarget: 'umd'
   },
   module: {
     loaders: [{
@@ -15,6 +17,6 @@ module.exports = {
     }],
   },
   plugins: [
-    new webpack.optimize.UglifyJsPlugin()
+    // new webpack.optimize.UglifyJsPlugin()
   ]
 }

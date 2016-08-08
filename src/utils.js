@@ -45,6 +45,8 @@ export function getDataAttributes(elem) {
   var trim = function(s) { return s.trim(); };
   var obj = {};
 
+  if (!elem || !elem.dataset) return obj
+
   for (var key in elem.dataset) {
     var val = elem.dataset[key];
     if (/true|false/.test(val.toLowerCase())) {
@@ -134,7 +136,7 @@ export function dateRange(start, end) {
   return dates;
 }
 
-export function extend(obj) {
+export function deepExtend(obj) {
   var other = Array.prototype.slice.call(arguments, 1);
 
   for (var i = 0; i < other.length; i++) {
@@ -145,7 +147,7 @@ export function extend(obj) {
         } if (Array.isArray(other[i][p])) {
           obj[p] = other[i][p].slice(0);
         } else {
-          obj[p] = extend(obj[p], other[i][p]);
+          obj[p] = deepExtend(obj[p], other[i][p]);
         }
       } else {
         obj[p] = other[i][p];
