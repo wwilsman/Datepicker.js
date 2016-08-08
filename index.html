@@ -8,10 +8,10 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,400italic,400,600|Roboto+Mono:300,400">
   <link rel="stylesheet" href="https://rawgit.com/PrismJS/prism/master/themes/prism.css">
 
-  <link rel="stylesheet" href="https://rawgit.com/wwilsman/datepicker/master/datepicker.css">
-  <script src="https://rawgit.com/wwilsman/datepicker/master/datepicker.js"></script>
-  <!-- <link rel="stylesheet" href="../datepicker.css"> -->
-  <!-- <script src="../datepicker.js"></script> -->
+  <!-- <link rel="stylesheet" href="https://rawgit.com/wwilsman/datepicker/master/datepicker.css"> -->
+  <!-- <script src="https://rawgit.com/wwilsman/datepicker/master/datepicker.js"></script> -->
+  <!-- <link rel="stylesheet" href="datepicker.css"> -->
+  <script src="../dist/datepicker.js"></script>
 
   <link rel="stylesheet" href="demo.css">
 </head>
@@ -24,7 +24,7 @@
         <p><a href="#examples">Examples</a> | <a href="#options">Options</a> | <a href="#methods">Methods</a> |
           <a href="https://github.com/wwilsman/datepicker/archive/master.zip">Download</a></p>
       </header>
-      
+
       <div class="section__header">
         <h2>Quickstart</h2>
       </div>
@@ -119,7 +119,7 @@
                   var date = new Date();
                   date.setDate(date.getDate() + 7);
                   return date;
-                })() 
+                })()
               });
             </code></pre></div>
           </div>
@@ -217,58 +217,58 @@
       <dl>
         <dt id="option-class"><strong>class:</strong> <code>""</code> <em>{String}</em></dt>
         <dd>Additional classes for theming</dd>
-        
+
         <dt id="option-open-on"><strong>openOn:</strong> <code>"start"</code> <em>{(String|Date)}</em></dt>
         <dd>Open the Datepicker to 'first' or 'last' date in selection, or a specific date</dd>
-        
+
         <dt id="option-multiple"><strong>multiple:</strong> <code>false</code> <em>{Boolean}</em></dt>
         <dd>Allow multiple dates to be selected</dd>
-        
+
         <dt id="option-inline"><strong>inline:</strong> <code>false</code> <em>{Boolean}</em></dt>
         <dd>Supress <code>#.show()</code> &amp; <code>#.hide()</code> functionality</dd>
-        
+
         <dt id="option-min"><strong>min:</strong> <code>false</code> <em>{(String|Date)}</em></dt>
         <dd>Minimum date allowed</dd>
-        
+
         <dt id="option-max"><strong>max:</strong> <code>false</code> <em>{(String|Date)}</em></dt>
         <dd>Maximum date allowed</dd>
-        
+
         <dt id="option-within"><strong>within:</strong> <code>false</code> <em>{(String[]|Date[])}</em></dt>
         <dd>Only allow dates within this array</dd>
-        
+
         <dt id="option-without"><strong>without:</strong> <code>false</code> <em>{(String[]|Date[])}</em></dt>
         <dd>Disallow dates within this array</dd>
-        
+
         <dt id="option-year-range"><strong>yearRange:</strong> <code>5</code> <em>{Integer}</em></dt>
         <dd>Range of year picker</dd>
-        
+
         <dt id="option-week-start"><strong>weekStart:</strong> <code>0</code> <em>{Integer}</em></dt>
         <dd>Day to start week on; 0 = Sunday, 1 = Monday, etc...</dd>
-        
+
         <dt id="option-calendars"><strong>calendars:</strong> <code>1</code> <em>{Integer}</em></dt>
         <dd>Number of calendars to draw</dd>
-        
+
         <dt id="option-paginate"><strong>paginate:</strong> <code>1</code> <em>{Integer}</em></dt>
         <dd>How many months to skip when using next/prev (useful for multiple calendars)</dd>
-        
+
         <dt id="option-index"><strong>index:</strong> <code>0</code> <em>{Integer}</em></dt>
         <dd>Index of main calendar when using multiple calendars</dd>
-        
+
         <dt id="option-separator"><strong>separator:</strong> <code>","</code> <em>{String}</em></dt>
         <dd>Separator between values when <code>multiple</code> is true</dd>
-        
+
         <dt id="option-separator"><strong>responsive:</strong> <code>{}</code> <em>{Object}</em></dt>
         <dd>Use a media query as the key and an options object as the value (see examples).</dd>
-        
+
         <dt id="option-serialize"><strong>serialize(<em>{Date}</em>):</strong> <em>{Callback}</em></dt>
         <dd>Callback to transform a Date into a String</dd>
-        
+
         <dt id="option-deserialize"><strong>deserialze(<em>{String}</em>):</strong> <em>{Callback}</em></dt>
         <dd>Callback to transform a String into a Date</dd>
-        
+
         <dt id="option-on-init"><strong>onInit(<em>{Element}</em>):</strong> <em>{Callback}</em></dt>
         <dd>Called on initialization</dd>
-        
+
         <dt id="option-on-update"><strong>onUpdate(<em>{(Date|Date[])}</em>):</strong> <em>{Callback}</em></dt>
         <dd>Called when datepicker is updated</dd>
       </dl>
@@ -291,20 +291,20 @@
         <dt id="method-get"><strong>#.get(key)</strong></dt>
         <dd>Get an option</dd>
         <dd><strong>key <em>{String}</em></strong> Option key</dd>
-        
+
         <dt id="method-update"><strong>#.update()</strong></dt>
         <dd>Update the bound element and trigger <code>onUpdate</code> callback</dd>
-        
+
         <dt id="method-open"><strong>#.open(<em>date</em>)</strong></dt>
         <dd>Option the calendar to a specific date (or <code>openOn</code> date)</dd>
         <dd><strong>date <em>{Date}</em></strong> The date to open to</dd>
-        
+
         <dt id="method-show"><strong>#.show()</strong></dt>
         <dd>Add classes to show the datepicker</dd>
-        
+
         <dt id="method-hide"><strong>#.hide()</strong></dt>
         <dd>Remove classes to hide the datepicker</dd>
-        
+
         <dt id="method-next"><strong>#.next(<em>paginate</em>)</strong></dt>
         <dd>Go to the next month</dd>
         <dd><strong>paginate <em>{Integer}</em></strong> How many months to skip</dd>
@@ -354,7 +354,7 @@
         <dd><strong>i <em>{Integer}</em></strong> Offset month to render</dd>
 
         <dt id="method-toString"><strong>#.toString()</strong></dt>
-        <dd>Basic `toString` method</dd>        
+        <dd>Basic `toString` method</dd>
       </dl>
     </div>
   </section>
