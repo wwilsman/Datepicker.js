@@ -69,12 +69,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 	var _utils = __webpack_require__(2);
 
 	var _defaults = __webpack_require__(3);
@@ -87,12 +81,20 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _events = __webpack_require__(6);
 
+	var _methods = __webpack_require__(7);
+
+	var _render = __webpack_require__(8);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	/**
 	 * Datepicker
+	 */
+	var Datepicker =
+
+	/**
 	 * @constructor
 	 *
 	 * @param {(string|HTMLElement)} elem - DOM element to attach to
@@ -112,634 +114,112 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @param {integer} [opts.paginate=1] - How many months to skip when using next/prev (useful for multiple calendars)
 	 * @param {integer} [opts.index=0] - Index of main calendar when using multiple calendars
 	 * @param {string} [opts.separator=','] - Separator between values when `multple` is true
-
-	 * @param {callback} [opts.serialize(date)] - Callback to transform Date to string value
+	   * @param {callback} [opts.serialize(date)] - Callback to transform Date to string value
 	 * @param {callback} [opts.deserialize(str)] - Callback to transform string into Date object
 	 * @param {callback} [opts.onInit(elem)] - Called on initialization
 	 * @param {callback} [opts.onUpdate(value)] - Called when datepicker is updated
 	 */
-	var Datepicker = function () {
-	  function Datepicker(elem, opts) {
-	    var _this = this;
+	function Datepicker(elem, opts) {
+	  var _this = this;
 
-	    _classCallCheck(this, Datepicker);
+	  _classCallCheck(this, Datepicker);
 
-	    this._initOptions = _options._initOptions;
-	    this._initDOM = _build._initDOM;
-	    this._initEvents = _events._initEvents;
-	    this._onmousedown = _events._onmousedown;
-	    this._onmousemove = _events._onmousemove;
-	    this._onmouseup = _events._onmouseup;
-	    this._onclick = _events._onclick;
+	  this.get = _options.get;
+	  this.set = _options.set;
+	  this._initOptions = _options._initOptions;
+	  this._initDOM = _build._initDOM;
+	  this._initEvents = _events._initEvents;
+	  this._onmousedown = _events._onmousedown;
+	  this._onmousemove = _events._onmousemove;
+	  this._onmouseup = _events._onmouseup;
+	  this._onclick = _events._onclick;
+	  this.update = _methods.update;
+	  this.open = _methods.open;
+	  this.show = _methods.show;
+	  this.hide = _methods.hide;
+	  this.toggle = _methods.toggle;
+	  this.next = _methods.next;
+	  this.prev = _methods.prev;
+	  this.goToDate = _methods.goToDate;
+	  this.hasDate = _methods.hasDate;
+	  this.addDate = _methods.addDate;
+	  this.removeDate = _methods.removeDate;
+	  this.toggleDates = _methods.toggleDates;
+	  this.getSelected = _methods.getSelected;
+	  this.getValue = _methods.getValue;
+	  this.setValue = _methods.setValue;
+	  this.dateAllowed = _methods.dateAllowed;
+	  this.render = _render.render;
+	  this.getCalendar = _render.getCalendar;
 
 
-	    // we have a selector
-	    if (typeof elem === 'string') {
-	      return (0, _utils.transform)((0, _utils.$$)(elem), function (el) {
-	        return new _this.constructor(el, opts);
-	      });
-	    }
-
-	    // no element?
-	    if (!elem) {
-	      elem = document.createElement('input');
-	    }
-
-	    // we need to know if the elem is an input
-	    var isInput = 'input' === elem.tagName.toLowerCase();
-	    var inputType = !isInput ? false : elem.type.toLowerCase();
-
-	    // make sure it's a valid input type
-	    if (isInput && !(inputType === 'text' || inputType === 'hidden')) elem.type = 'text';
-
-	    // save this
-	    this._el = elem;
-
-	    // initialize options
-	    this._initOptions(opts);
-
-	    // initialize the dom
-	    this._initDOM(elem);
-
-	    // initialize event listeners
-	    this._initEvents();
-
-	    // set the initial value
-	    this.value = isInput ? elem.value : elem.dataset.value || '';
-
-	    // callback option
-	    if (this._opts.onInit) opts.onInit.call(this, elem);
+	  // we have a selector
+	  if (typeof elem === 'string') {
+	    return (0, _utils.transform)((0, _utils.$$)(elem), function (el) {
+	      return new _this.constructor(el, opts);
+	    });
 	  }
 
-	  /*
-	   * Initialize options
-	   */
+	  // no element?
+	  if (!elem) {
+	    elem = document.createElement('input');
+	  }
 
+	  // we need to know if the elem is an input
+	  var isInput = 'input' === elem.tagName.toLowerCase();
+	  var inputType = !isInput ? false : elem.type.toLowerCase();
 
-	  /*
-	   * Initialize DOM
-	   */
+	  // make sure it's a valid input type
+	  if (isInput && !(inputType === 'text' || inputType === 'hidden')) elem.type = 'text';
 
+	  // save this
+	  this._el = elem;
 
-	  /*
-	   * Event methods
-	   */
+	  // initialize options
+	  this._initOptions(opts);
 
+	  // initialize the dom
+	  this._initDOM(elem);
 
-	  _createClass(Datepicker, [{
-	    key: 'set',
+	  // initialize event listeners
+	  this._initEvents();
 
+	  // set the initial value
+	  this.setValue(isInput ? elem.value : elem.dataset.value || '');
 
-	    /**
-	     * Set options
-	     *
-	     * @param {(string|Object)} prop - Option key, or object of properties
-	     * @param {mixed} [value] - Value of option (not used if object present)
-	     * @param {boolean} [noRedraw] - Do not redraw the calendar afterwards
-	     */
-	    value: function set(key, val) {
-	      if (!key) return;
+	  // callback option
+	  if (typeof this._opts.onInit === 'function') opts.onInit.call(this, elem);
+	}
 
-	      // iterate over the object
-	      if ((typeof key === 'undefined' ? 'undefined' : _typeof(key)) === 'object') {
-	        var obj = (0, _utils.deepExtend)({}, this.constructor.defaults, key);
-	        for (var k in obj) {
-	          this.set(k, obj[k], true);
-	        }if (this._isOpen) this.render();
-	        return this._opts;
-	      }
+	/**
+	 * Option methods
+	 */
 
-	      // setting part of object
-	      if (key.indexOf('.') > 0) {
-	        var _k = key.split('.');
-	        var v = val;
 
-	        key = _k.unshift();
-	        val = {};
+	/**
+	 * Default options
+	 */
 
-	        _k.reduce(function (r, o) {
-	          return val[o] = {};
-	        }, val);
-	        val[_k[_k.length - 1]] = v;
-	      }
 
-	      // default opts to pass to setters
-	      var opts = (0, _utils.deepExtend)({}, this._opts, this.constructor.defaults);
+	/**
+	 * Initialize DOM
+	 */
 
-	      // fix the value
-	      if (key in this._setters) {
-	        val = this._setters[key](val, opts);
-	      }
 
-	      if ((typeof val === 'undefined' ? 'undefined' : _typeof(val)) === 'object') val = (0, _utils.deepExtend)({}, val, this.constructor.defaults[key]);
+	/**
+	 * Event methods
+	 */
 
-	      // actually set the value
-	      this._opts[key] = val;
 
-	      // rerender
-	      // if (!this._isOpen) this.render()
+	/**
+	 * Public methods
+	 */
 
-	      // return value
-	      return val;
-	    }
 
-	    /**
-	     * Get an option
-	     *
-	     * @param {string} key - Option key
-	     */
-
-	  }, {
-	    key: 'get',
-	    value: function get(key) {
-	      return this._opts[key];
-	    }
-
-	    /**
-	     * Update the bound element and trigger `onUpdate` callback
-	     */
-
-	  }, {
-	    key: 'update',
-	    value: function update() {
-	      if (this._el.nodeName.toLowerCase() === 'input') {
-	        this._el.value = this.value;
-	      } else {
-	        this._el.dataset.value = this.value;
-	      }
-
-	      if (typeof this._opts.onUpdate === 'function') {
-	        this._opts.onUpdate.call(this, this.getSelected());
-	      }
-	    }
-
-	    /**
-	     * Open the calendar to a specific date (or `openOn` date);
-	     *
-	     * @param {string|Date} [date=openOn] - The date to open to
-	     */
-
-	  }, {
-	    key: 'open',
-	    value: function open(date) {
-	      var selected = [].concat(this.getSelected());
-	      date = date || this._opts.openOn || this._month;
-
-	      // we have a string
-	      if (typeof date === 'string') {
-	        date = date.toLowerCase();
-
-	        // first, last, or deserialize
-	        if (date === 'first' && selected.length) {
-	          date = selected[0];
-	        } else if (date === 'last' && selected.length) {
-	          date = selected[selected.length - 1];
-	        } else if (date !== 'today') {
-	          date = this._opts.deserialize(date);
-	        }
-	      }
-
-	      // still not valid? then open to today
-	      if (!(0, _utils.isValidDate)(date)) {
-	        date = new Date();
-	      }
-
-	      // set calendar to date and show it
-	      this.goToDate(date);
-	      this.show();
-	    }
-
-	    /**
-	     * Show the datepicker and position it
-	     */
-
-	  }, {
-	    key: 'show',
-	    value: function show() {
-	      if (!this._opts.inline) {
-	        this.wrapper.style.display = 'block';
-	        this.wrapper.style.top = '100%';
-
-	        var rect = this.wrapper.getBoundingClientRect();
-	        var posRight = rect.right > window.innerWidth;
-	        var posTop = rect.bottom > window.innerHeight;
-
-	        this.wrapper.style.top = posTop ? '' : '100%';
-	        this.wrapper.style.right = posRight ? 0 : '';
-	        this.wrapper.style.bottom = posTop ? '100%' : '';
-	        this.wrapper.style.left = posRight ? '' : 0;
-
-	        rect = this.wrapper.getBoundingClientRect();
-	        var fitLeft = rect.right >= rect.width;
-	        var fitTop = rect.bottom > rect.height;
-
-	        this.wrapper.style.top = posTop && fitTop ? '' : '100%';
-	        this.wrapper.style.right = posRight && fitLeft ? 0 : '';
-	        this.wrapper.style.bottom = posTop && fitTop ? '100%' : '';
-	        this.wrapper.style.left = posRight && fitLeft ? '' : 0;
-
-	        this._isOpen = true;
-	      }
-	    }
-
-	    /**
-	     * Hide the datepicker
-	     */
-
-	  }, {
-	    key: 'hide',
-	    value: function hide() {
-	      if (!this._opts.inline) {
-	        this.wrapper.style.display = 'none';
-	        this._isOpen = false;
-	      }
-	    }
-
-	    /**
-	     * Toggle the datepicker
-	     */
-
-	  }, {
-	    key: 'toggle',
-	    value: function toggle() {
-	      if (this._isOpen) {
-	        this.hide();
-	      } else {
-	        this.open();
-	      }
-	    }
-
-	    /**
-	     * Go to the next month
-	     *
-	     * @param {integer} [skip] - How many months to skip
-	     */
-
-	  }, {
-	    key: 'next',
-	    value: function next(skip) {
-	      var date = new Date(this._month.getTime());
-	      skip = Math.max(skip || 1, 1);
-	      date.setMonth(date.getMonth() + skip);
-	      this.goToDate(date);
-	    }
-
-	    /**
-	     * Go to the previous month
-	     *
-	     * @param {integer} [skip] - How many months to skip
-	     */
-
-	  }, {
-	    key: 'prev',
-	    value: function prev(skip) {
-	      var date = new Date(this._month.getTime());
-	      skip = Math.max(skip || 1, 1);
-	      date.setMonth(date.getMonth() - skip);
-	      this.goToDate(date);
-	    }
-
-	    /**
-	     * Go to a specific date
-	     *
-	     * @param {(string|Date)} date - Date to set the calendar to
-	     */
-
-	  }, {
-	    key: 'goToDate',
-	    value: function goToDate(date) {
-	      date = (0, _utils.setToStart)(this._opts.deserialize(date));
-	      date.setDate(1);
-
-	      this._month = date;
-
-	      if (this._isOpen) {
-	        this.render();
-	      }
-	    }
-
-	    /**
-	     * Check the value for a specific date
-	     *
-	     * @param {(string|Date)} date - The date to check for
-	     */
-
-	  }, {
-	    key: 'hasDate',
-	    value: function hasDate(date) {
-	      date = (0, _utils.setToStart)(this._opts.deserialize(date));
-	      return !!this._selected[date.getTime()];
-	    }
-
-	    /**
-	     * Add a date to the value
-	     *
-	     * @param {(string|Date)} date - The date to add
-	     */
-
-	  }, {
-	    key: 'addDate',
-	    value: function addDate(date) {
-	      this.toggleDates(date, true);
-	    }
-
-	    /**
-	     * Remove a date from the value
-	     *
-	     * @param {(string|Date)} date - The date to remove
-	     */
-
-	  }, {
-	    key: 'removeDate',
-	    value: function removeDate(date) {
-	      this.toggleDates(date, false);
-	    }
-
-	    /**
-	     * Toggle a date selection
-	     *
-	     * @param {(string|Date)} date - Date to toggle
-	     * @param {boolean} [force] - Force to selected/deselected
-	     */
-
-	  }, {
-	    key: 'toggleDates',
-	    value: function toggleDates(dates, force) {
-	      var _this2 = this;
-
-	      var _opts = this._opts;
-	      var multiple = _opts.multiple;
-	      var deserialize = _opts.deserialize;
-
-	      dates = [].concat(dates).filter(function (d) {
-	        return !!d && _this2.dateAllowed(d);
-	      });
-
-	      dates.forEach(function (d) {
-	        d = (0, _utils.setToStart)(deserialize(d));
-	        var t = d.getTime();
-
-	        // add the date
-	        if (!_this2._selected[t] && (force === undefined || !!force)) {
-
-	          // clear old value
-	          if (!multiple) _this2._selected = {};
-
-	          _this2._selected[t] = d;
-
-	          // remove the date
-	        } else if (_this2._selected[t] && !force) {
-	          delete _this2._selected[t];
-	        }
-	      });
-
-	      this.update();
-	    }
-
-	    /**
-	     * Get the selected dates
-	     */
-
-	  }, {
-	    key: 'getSelected',
-	    value: function getSelected() {
-	      var selected = [];
-	      for (var t in this._selected) {
-	        selected.push(this._selected[t]);
-	      }return this._opts.multiple ? selected.sort(_utils.compareDates) : selected[0];
-	    }
-
-	    /**
-	     * Get the value
-	     */
-
-	  }, {
-	    key: 'dateAllowed',
-
-
-	    /**
-	     * Check if a date is allowed in the datepicker
-	     *
-	     * @param {(string|Date)} date - The date to check
-	     * @param {string} [dim] - The dimension to check ('year' or 'month')
-	     */
-	    value: function dateAllowed(date, dim) {
-	      var _opts2 = this._opts;
-	      var min = _opts2.min;
-	      var max = _opts2.max;
-	      var within = _opts2.within;
-	      var without = _opts2.without;
-	      var deserialize = _opts2.deserialize;
-
-	      var belowMax = void 0,
-	          aboveMin = belowMax = true;
-
-	      date = (0, _utils.setToStart)(deserialize(date));
-
-	      if (dim == 'month') {
-	        aboveMin = !min || date.getMonth() >= min.getMonth();
-	        belowMax = !max || date.getMonth() <= max.getMonth();
-	      } else if (dim == 'year') {
-	        aboveMin = !min || date.getFullYear() >= min.getFullYear();
-	        belowMax = !max || date.getFullYear() <= max.getFullYear();
-	      } else {
-	        aboveMin = !min || date >= min;
-	        belowMax = !max || date <= max;
-	      }
-
-	      return aboveMin && belowMax && (!without || !(0, _utils.dateInArray)(date, without, dim)) && (!within || (0, _utils.dateInArray)(date, within, dim));
-	    }
-
-	    /**
-	     * render the calendar HTML
-	     */
-
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      var _this3 = this;
-
-	      var opts = this._opts;
-	      var renderCache = {};
-
-	      // avoid duplicate calls to getCalendar
-	      var getData = function getData(i) {
-	        return renderCache[i] || (renderCache[i] = _this3.getCalendar(i));
-	      };
-
-	      // generic render header
-	      var _renderHeader = function _renderHeader(data) {
-	        var _date = data._date;
-	        var index = data.index;
-	        var month = data.month;
-	        var year = data.year;
-
-
-	        return _this3._renderers.header(_extends({}, data, {
-
-	          // render month select
-	          renderMonthSelect: function renderMonthSelect() {
-	            var i = arguments.length <= 0 || arguments[0] === undefined ? index : arguments[0];
-
-	            var d = new Date(_date.getTime());
-	            var o = [];
-
-	            for (var m = 0; m < 12; m++) {
-	              if (_this3.dateAllowed(d.setMonth(m), 'month')) o.push(opts.i18n.months[m]);
-	            }
-
-	            return _this3._renderers.select({ o: o, i: i, t: 'month', c: month });
-	          },
-
-	          // render year select
-	          renderYearSelect: function renderYearSelect() {
-	            var i = arguments.length <= 0 || arguments[0] === undefined ? index : arguments[0];
-
-	            var d = new Date(_date.getTime());
-	            var y = year - opts.yearRange;
-	            var max = year + opts.yearRange;
-	            var o = [];
-
-	            for (; y <= max; y++) {
-	              if (_this3.dateAllowed(d.setFullYear(y), 'year')) o.push(y);
-	            }
-
-	            return _this3._renderers.select({ o: o, i: i, t: 'year', c: year });
-	          }
-	        }));
-	      };
-
-	      this.wrapper.innerHTML = this._renderers.container({
-
-	        // render header
-	        renderHeader: function renderHeader() {
-	          var i = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
-	          return _renderHeader(getData(i));
-	        },
-
-	        // render calendar
-	        renderCalendar: function renderCalendar() {
-	          var i = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
-
-	          var data = getData(i);
-
-	          return _this3._renderers.calendar(_extends({}, data, {
-
-	            // render header within calendar
-	            renderHeader: function renderHeader() {
-	              return _renderHeader(data);
-	            },
-
-	            // render day
-	            renderDay: function renderDay(day) {
-	              return _this3._renderers.day(day);
-	            }
-	          }));
-	        }
-	      });
-	    }
-
-	    /**
-	     * Get an object containing data for a calendar month
-	     *
-	     * @param {integer} [i=0] - Offset month to render
-	     */
-
-	  }, {
-	    key: 'getCalendar',
-	    value: function getCalendar() {
-	      var index = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
-
-	      var opts = this._opts;
-	      var date = new Date(this._month.getTime());
-	      date.setMonth(date.getMonth() + index);
-
-	      var month = date.getMonth();
-	      var year = date.getFullYear();
-
-	      // get next/prev month to determine if they're allowed
-	      var nextMonth = new Date(date.getTime());
-	      nextMonth.setMonth(nextMonth.getMonth() + 1);
-	      nextMonth.setDate(1);
-
-	      var prevMonth = new Date(date.getTime());
-	      prevMonth.setMonth(prevMonth.getMonth() - 1);
-	      prevMonth.setDate((0, _utils.getDaysInMonth)(prevMonth));
-
-	      // collect the days' data
-	      var days = [];
-
-	      // setup the start day
-	      var start = date.getDay() - opts.weekStart;
-	      while (start < 0) {
-	        start += 7;
-	      } // number of days in the month, padded to fit a calendar
-	      var dayCount = (0, _utils.getDaysInMonth)(year, month) + start;
-	      while (dayCount % 7) {
-	        dayCount += 1;
-	      } // today!
-	      var today = (0, _utils.setToStart)(new Date());
-
-	      // loop through the calendar days
-	      for (var i = 0; i < dayCount; i++) {
-	        var day = new Date(year, month, 1 + (i - start));
-	        var dayMonth = day.getMonth();
-	        var isPrevMonth = dayMonth < month;
-	        var isNextMonth = dayMonth > month;
-	        var weekday = day.getDay();
-
-	        // basic day data
-	        days.push({
-	          _date: day,
-
-	          date: opts.serialize(day),
-	          daynum: day.getDate(),
-	          weekday: opts.i18n.weekdays[weekday],
-	          weekdayShort: opts.i18n.weekdaysShort[weekday],
-
-	          isToday: day.getTime() === today.getTime(),
-	          isWeekend: weekday === 0 || weekday === 6,
-	          isSelected: this.hasDate(day),
-	          isDisabled: !this.dateAllowed(day),
-	          isThisMonth: !isPrevMonth && !isNextMonth,
-	          isPrevMonth: isPrevMonth,
-	          isNextMonth: isNextMonth
-	        });
-	      }
-
-	      // return the calendar data
-	      return {
-	        _date: date,
-	        weekdays: opts.i18n.weekdays,
-	        weekdaysShort: opts.i18n.weekdaysShort,
-	        month: opts.i18n.months[month],
-	        year: year, days: days,
-
-	        hasNext: !opts.max || nextMonth <= opts.max,
-	        hasPrev: !opts.min || prevMonth >= opts.min
-	      };
-	    }
-	  }, {
-	    key: 'value',
-	    get: function get() {
-	      var selected = (0, _utils.transform)(this.getSelected() || [], this._opts.serialize, this);
-	      return [].concat(selected).join(this._opts.separator);
-	    }
-
-	    /**
-	     * Set the value to a specific date
-	     *
-	     * @param {string} value - The date value
-	     */
-	    ,
-	    set: function set(val) {
-	      this._selected = {};
-	      this.addDate(val.split(this._opts.separator));
-	    }
-	  }]);
-
-	  return Datepicker;
-	}();
+	/**
+	 * Render methods
+	 */
+	;
 
 	Datepicker.defaults = _defaults2.default;
 	exports.default = Datepicker;
@@ -1020,7 +500,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
 	exports._initOptions = _initOptions;
+	exports.set = set;
+	exports.get = get;
 
 	var _utils = __webpack_require__(2);
 
@@ -1059,7 +544,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  // deserialize
 
-	  if (typeof openOn == 'string' && !/^(first|last|today)$/.test(openOn)) openOn = deserialize.call(this, openOn);
+	  if (typeof openOn == 'string' && !/^(first|last|today)$/.test(openOn)) {
+	    openOn = deserialize.call(this, openOn);
+	    if (!(0, _utils.isValidDate)(openOn)) openOn = new Date();
+	  }
 
 	  // set the initial calendar date
 	  if (!this._month) {
@@ -1073,7 +561,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this._month = date;
 	  }
 
-	  return (0, _utils.isValidDate)(openOn) ? openOn : new Date();
+	  return openOn;
 	}
 
 	// constrain weekstart
@@ -1116,10 +604,85 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  // set all the options
-	  this.set((0, _utils.deepExtend)({}, opts, (0, _utils.getDataAttributes)(this._el)), null, true);
+	  this.set((0, _utils.deepExtend)({}, this.constructor.defaults, (0, _utils.getDataAttributes)(this._el), opts));
 
 	  // render select template
 	  this._renderers.select = (0, _utils.tmpl)(['<select data-<%= t %>="<%= c %>" data-index="<%= i %>">', '<% for (var j = 0; j < o.length; j++) { %>', '<% var v = (t === "year") ? o[j] : j; %>', '<option value="<%= v %>"<%= (v === c) ? " selected" : "" %>>', '<%= o[j] %>', '</option>', '<% } %>', '</select>'].join(''));
+	}
+
+	/**
+	 * Set options
+	 *
+	 * @param {(string|Object)} prop - Option key, or object of properties
+	 * @param {mixed} [value] - Value of option (not used if object present)
+	 * @param {boolean} [noRedraw] - Do not redraw the calendar afterwards
+	 */
+	function set(key, val) {
+	  var k = key;
+
+	  if (!key) return;
+
+	  // iterate over the object
+	  if ((typeof key === 'undefined' ? 'undefined' : _typeof(key)) === 'object') {
+
+	    // prioritize serialize & deserialize
+	    if (key.serialize) {
+	      this.set('serialize', key.serialize);
+	      delete key.serialize;
+	    }
+	    if (key.deserialize) {
+	      this.set('deserialize', key.deserialize);
+	      delete key.deserialize;
+	    }
+
+	    for (var _k in key) {
+	      this.set(_k, key[_k]);
+	    }return this._opts;
+	  }
+
+	  // setting part of object
+	  if (key.indexOf('.') > 0) {
+	    var p = key.split('.');
+	    var v = val;
+
+	    key = p.unshift();
+	    val = {};
+
+	    p.reduce(function (r, o) {
+	      return val[o] = {};
+	    }, val);
+	    val[p[p.length - 1]] = v;
+	  }
+
+	  // default opts to pass to setters
+	  var opts = (0, _utils.deepExtend)({}, this.constructor.defaults, this._opts);
+
+	  // fix the value
+	  if (key in this._setters) {
+	    val = this._setters[key](val, opts);
+	  }
+
+	  if ((typeof val === 'undefined' ? 'undefined' : _typeof(val)) === 'object') val = (0, _utils.deepExtend)({}, opts[key], val);
+
+	  // actually set the value
+	  this._opts[key] = val;
+
+	  // rerender
+	  if (!this._isOpen && this.wrapper) this.render();
+
+	  // return value
+	  return this.get(k);
+	}
+
+	/**
+	 * Get an option
+	 *
+	 * @param {string} key - Option key
+	 */
+	function get(key) {
+	  return key.split('.').reduce(function (v, k) {
+	    return v[k];
+	  }, this._opts);
 	}
 
 /***/ },
@@ -1350,6 +913,481 @@ return /******/ (function(modules) { // webpackBootstrap
 	      _this4.render();
 	    };
 	  }
+	}
+
+/***/ },
+/* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.update = update;
+	exports.open = open;
+	exports.show = show;
+	exports.hide = hide;
+	exports.toggle = toggle;
+	exports.next = next;
+	exports.prev = prev;
+	exports.goToDate = goToDate;
+	exports.hasDate = hasDate;
+	exports.addDate = addDate;
+	exports.removeDate = removeDate;
+	exports.toggleDates = toggleDates;
+	exports.getSelected = getSelected;
+	exports.getValue = getValue;
+	exports.setValue = setValue;
+	exports.dateAllowed = dateAllowed;
+
+	var _utils = __webpack_require__(2);
+
+	/**
+	 * Update the bound element and trigger `onUpdate` callback
+	 */
+	function update() {
+	  if (this._el.nodeName.toLowerCase() === 'input') {
+	    this._el.value = this.value;
+	  } else {
+	    this._el.dataset.value = this.value;
+	  }
+
+	  if (typeof this._opts.onUpdate === 'function') {
+	    this._opts.onUpdate.call(this, this.getSelected());
+	  }
+	}
+
+	/**
+	 * Open the calendar to a specific date (or `openOn` date);
+	 *
+	 * @param {string|Date} [date=openOn] - The date to open to
+	 */
+	function open(date) {
+	  var selected = [].concat(this.getSelected());
+	  date = date || this._opts.openOn || this._month;
+
+	  // we have a string
+	  if (typeof date === 'string') {
+	    date = date.toLowerCase();
+
+	    // first, last, or deserialize
+	    if (date === 'first' && selected.length) {
+	      date = selected[0];
+	    } else if (date === 'last' && selected.length) {
+	      date = selected[selected.length - 1];
+	    } else if (date !== 'today') {
+	      date = this._opts.deserialize(date);
+	    }
+	  }
+
+	  // still not valid? then open to today
+	  if (!(0, _utils.isValidDate)(date)) {
+	    date = new Date();
+	  }
+
+	  // set calendar to date and show it
+	  this.goToDate(date);
+	  this.show();
+	}
+
+	/**
+	 * Show the datepicker and position it
+	 */
+	function show() {
+	  if (!this._opts.inline) {
+	    this.wrapper.style.display = 'block';
+	    this.wrapper.style.top = '100%';
+
+	    var rect = this.wrapper.getBoundingClientRect();
+	    var posRight = rect.right > window.innerWidth;
+	    var posTop = rect.bottom > window.innerHeight;
+
+	    this.wrapper.style.top = posTop ? '' : '100%';
+	    this.wrapper.style.right = posRight ? 0 : '';
+	    this.wrapper.style.bottom = posTop ? '100%' : '';
+	    this.wrapper.style.left = posRight ? '' : 0;
+
+	    rect = this.wrapper.getBoundingClientRect();
+	    var fitLeft = rect.right >= rect.width;
+	    var fitTop = rect.bottom > rect.height;
+
+	    this.wrapper.style.top = posTop && fitTop ? '' : '100%';
+	    this.wrapper.style.right = posRight && fitLeft ? 0 : '';
+	    this.wrapper.style.bottom = posTop && fitTop ? '100%' : '';
+	    this.wrapper.style.left = posRight && fitLeft ? '' : 0;
+
+	    this._isOpen = true;
+	  }
+	}
+
+	/**
+	 * Hide the datepicker
+	 */
+	function hide() {
+	  if (!this._opts.inline) {
+	    this.wrapper.style.display = 'none';
+	    this._isOpen = false;
+	  }
+	}
+
+	/**
+	 * Toggle the datepicker
+	 */
+	function toggle() {
+	  if (this._isOpen) {
+	    this.hide();
+	  } else {
+	    this.open();
+	  }
+	}
+
+	/**
+	 * Go to the next month
+	 *
+	 * @param {integer} [skip] - How many months to skip
+	 */
+	function next(skip) {
+	  var date = new Date(this._month.getTime());
+	  skip = Math.max(skip || 1, 1);
+	  date.setMonth(date.getMonth() + skip);
+	  this.goToDate(date);
+	}
+
+	/**
+	 * Go to the previous month
+	 *
+	 * @param {integer} [skip] - How many months to skip
+	 */
+	function prev(skip) {
+	  var date = new Date(this._month.getTime());
+	  skip = Math.max(skip || 1, 1);
+	  date.setMonth(date.getMonth() - skip);
+	  this.goToDate(date);
+	}
+
+	/**
+	 * Go to a specific date
+	 *
+	 * @param {(string|Date)} date - Date to set the calendar to
+	 */
+	function goToDate(date) {
+	  date = (0, _utils.setToStart)(this._opts.deserialize(date));
+	  date.setDate(1);
+
+	  this._month = date;
+
+	  if (this._isOpen) {
+	    this.render();
+	  }
+	}
+
+	/**
+	 * Check the value for a specific date
+	 *
+	 * @param {(string|Date)} date - The date to check for
+	 */
+	function hasDate(date) {
+	  date = (0, _utils.setToStart)(this._opts.deserialize(date));
+	  return !!this._selected[date.getTime()];
+	}
+
+	/**
+	 * Add a date to the value
+	 *
+	 * @param {(string|Date)} date - The date to add
+	 */
+	function addDate(date) {
+	  this.toggleDates(date, true);
+	}
+
+	/**
+	 * Remove a date from the value
+	 *
+	 * @param {(string|Date)} date - The date to remove
+	 */
+	function removeDate(date) {
+	  this.toggleDates(date, false);
+	}
+
+	/**
+	 * Toggle a date selection
+	 *
+	 * @param {(string|Date)} date - Date to toggle
+	 * @param {boolean} [force] - Force to selected/deselected
+	 */
+	function toggleDates(dates, force) {
+	  var _this = this;
+
+	  var _opts = this._opts;
+	  var multiple = _opts.multiple;
+	  var deserialize = _opts.deserialize;
+
+	  dates = [].concat(dates).filter(function (d) {
+	    return !!d && _this.dateAllowed(d);
+	  });
+
+	  dates.forEach(function (d) {
+	    d = (0, _utils.setToStart)(deserialize(d));
+	    var t = d.getTime();
+
+	    // add the date
+	    if (!_this._selected[t] && (force === undefined || !!force)) {
+
+	      // clear old value
+	      if (!multiple) _this._selected = {};
+
+	      _this._selected[t] = d;
+
+	      // remove the date
+	    } else if (_this._selected[t] && !force) {
+	      delete _this._selected[t];
+	    }
+	  });
+
+	  this.update();
+	}
+
+	/**
+	 * Get the selected dates
+	 */
+	function getSelected() {
+	  var selected = [];
+	  for (var t in this._selected) {
+	    selected.push(this._selected[t]);
+	  }return this._opts.multiple ? selected.sort(_utils.compareDates) : selected[0];
+	}
+
+	/**
+	 * Get the value
+	 */
+	function getValue() {
+	  var selected = transform(this.getSelected() || [], this._opts.serialize, this);
+	  return [].concat(selected).join(this._opts.separator);
+	}
+
+	/**
+	 * Set the value to a specific date
+	 *
+	 * @param {string} value - The date value
+	 */
+	function setValue(val) {
+	  this._selected = {};
+	  this.addDate(val.split(this._opts.separator));
+	}
+
+	/**
+	 * Check if a date is allowed in the datepicker
+	 *
+	 * @param {(string|Date)} date - The date to check
+	 * @param {string} [dim] - The dimension to check ('year' or 'month')
+	 */
+	function dateAllowed(date, dim) {
+	  var _opts2 = this._opts;
+	  var min = _opts2.min;
+	  var max = _opts2.max;
+	  var within = _opts2.within;
+	  var without = _opts2.without;
+	  var deserialize = _opts2.deserialize;
+
+	  var belowMax = void 0,
+	      aboveMin = belowMax = true;
+
+	  date = (0, _utils.setToStart)(deserialize(date));
+
+	  if (dim == 'month') {
+	    aboveMin = !min || date.getMonth() >= min.getMonth();
+	    belowMax = !max || date.getMonth() <= max.getMonth();
+	  } else if (dim == 'year') {
+	    aboveMin = !min || date.getFullYear() >= min.getFullYear();
+	    belowMax = !max || date.getFullYear() <= max.getFullYear();
+	  } else {
+	    aboveMin = !min || date >= min;
+	    belowMax = !max || date <= max;
+	  }
+
+	  return aboveMin && belowMax && (!without || !(0, _utils.dateInArray)(date, without, dim)) && (!within || (0, _utils.dateInArray)(date, within, dim));
+	}
+
+/***/ },
+/* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	exports.render = render;
+	exports.getCalendar = getCalendar;
+
+	var _utils = __webpack_require__(2);
+
+	/**
+	 * render the calendar HTML
+	 */
+	function render() {
+	  var _this = this;
+
+	  var opts = this._opts;
+	  var renderCache = {};
+
+	  // avoid duplicate calls to getCalendar
+	  var getData = function getData(i) {
+	    return renderCache[i] || (renderCache[i] = _this.getCalendar(i));
+	  };
+
+	  // generic render header
+	  var _renderHeader = function _renderHeader(data) {
+	    var _date = data._date;
+	    var index = data.index;
+	    var month = data.month;
+	    var year = data.year;
+
+
+	    return _this._renderers.header(_extends({}, data, {
+
+	      // render month select
+	      renderMonthSelect: function renderMonthSelect() {
+	        var i = arguments.length <= 0 || arguments[0] === undefined ? index : arguments[0];
+
+	        var d = new Date(_date.getTime());
+	        var o = [];
+
+	        for (var m = 0; m < 12; m++) {
+	          if (_this.dateAllowed(d.setMonth(m), 'month')) o.push(opts.i18n.months[m]);
+	        }
+
+	        return _this._renderers.select({ o: o, i: i, t: 'month', c: month });
+	      },
+
+	      // render year select
+	      renderYearSelect: function renderYearSelect() {
+	        var i = arguments.length <= 0 || arguments[0] === undefined ? index : arguments[0];
+
+	        var d = new Date(_date.getTime());
+	        var y = year - opts.yearRange;
+	        var max = year + opts.yearRange;
+	        var o = [];
+
+	        for (; y <= max; y++) {
+	          if (_this.dateAllowed(d.setFullYear(y), 'year')) o.push(y);
+	        }
+
+	        return _this._renderers.select({ o: o, i: i, t: 'year', c: year });
+	      }
+	    }));
+	  };
+
+	  this.wrapper.innerHTML = this._renderers.container({
+
+	    // render header
+	    renderHeader: function renderHeader() {
+	      var i = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+	      return _renderHeader(getData(i));
+	    },
+
+	    // render calendar
+	    renderCalendar: function renderCalendar() {
+	      var i = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+
+	      var data = getData(i);
+
+	      return _this._renderers.calendar(_extends({}, data, {
+
+	        // render header within calendar
+	        renderHeader: function renderHeader() {
+	          return _renderHeader(data);
+	        },
+
+	        // render day
+	        renderDay: function renderDay(day) {
+	          return _this._renderers.day(day);
+	        }
+	      }));
+	    }
+	  });
+	}
+
+	/**
+	 * Get an object containing data for a calendar month
+	 *
+	 * @param {integer} [i=0] - Offset month to render
+	 */
+	function getCalendar() {
+	  var index = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+
+	  var opts = this._opts;
+	  var date = new Date(this._month.getTime());
+	  date.setMonth(date.getMonth() + index);
+
+	  var month = date.getMonth();
+	  var year = date.getFullYear();
+
+	  // get next/prev month to determine if they're allowed
+	  var nextMonth = new Date(date.getTime());
+	  nextMonth.setMonth(nextMonth.getMonth() + 1);
+	  nextMonth.setDate(1);
+
+	  var prevMonth = new Date(date.getTime());
+	  prevMonth.setMonth(prevMonth.getMonth() - 1);
+	  prevMonth.setDate((0, _utils.getDaysInMonth)(prevMonth));
+
+	  // collect the days' data
+	  var days = [];
+
+	  // setup the start day
+	  var start = date.getDay() - opts.weekStart;
+	  while (start < 0) {
+	    start += 7;
+	  } // number of days in the month, padded to fit a calendar
+	  var dayCount = (0, _utils.getDaysInMonth)(year, month) + start;
+	  while (dayCount % 7) {
+	    dayCount += 1;
+	  } // today!
+	  var today = (0, _utils.setToStart)(new Date());
+
+	  // loop through the calendar days
+	  for (var i = 0; i < dayCount; i++) {
+	    var day = new Date(year, month, 1 + (i - start));
+	    var dayMonth = day.getMonth();
+	    var isPrevMonth = dayMonth < month;
+	    var isNextMonth = dayMonth > month;
+	    var weekday = day.getDay();
+
+	    // basic day data
+	    days.push({
+	      _date: day,
+
+	      date: opts.serialize(day),
+	      daynum: day.getDate(),
+	      weekday: opts.i18n.weekdays[weekday],
+	      weekdayShort: opts.i18n.weekdaysShort[weekday],
+
+	      isToday: day.getTime() === today.getTime(),
+	      isWeekend: weekday === 0 || weekday === 6,
+	      isSelected: this.hasDate(day),
+	      isDisabled: !this.dateAllowed(day),
+	      isThisMonth: !isPrevMonth && !isNextMonth,
+	      isPrevMonth: isPrevMonth,
+	      isNextMonth: isNextMonth
+	    });
+	  }
+
+	  // return the calendar data
+	  return {
+	    _date: date,
+	    weekdays: opts.i18n.weekdays,
+	    weekdaysShort: opts.i18n.weekdaysShort,
+	    month: opts.i18n.months[month],
+	    year: year, days: days,
+
+	    hasNext: !opts.max || nextMonth <= opts.max,
+	    hasPrev: !opts.min || prevMonth >= opts.min
+	  };
 	}
 
 /***/ }
