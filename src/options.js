@@ -39,8 +39,10 @@ function deserializeOpenOn(openOn, opts) {
   let { deserialize } = opts
 
   // deserialize
-  if (typeof openOn == 'string' && !/^(first|last|today)$/.test(openOn))
+  if (typeof openOn == 'string' && !/^(first|last|today)$/.test(openOn)) {
     openOn = deserialize.call(this, openOn)
+    if (!isValidDate(openOn)) openOn = new Date()
+  }
 
   // set the initial calendar date
   if (!this._month) {
@@ -55,7 +57,7 @@ function deserializeOpenOn(openOn, opts) {
     this._month = date
   }
 
-  return isValidDate(openOn) ? openOn : new Date()
+  return openOn
 }
 
 // constrain weekstart
@@ -98,7 +100,11 @@ export function _initOptions(opts) {
   }
 
   // set all the options
-  this.set(deepExtend({}, opts, getDataAttributes(this._el)), null, true)
+  this.set(deepExtend({},
+    this.constructor.defaults,
+    getDataAttributes(this._el),
+    opts
+  ))
 
   // render select template
   this._renderers.select = tmpl([
@@ -111,4 +117,78 @@ export function _initOptions(opts) {
       '<% } %>',
     '</select>'
   ].join(''))
+}
+
+
+/**
+ * Set options
+ *
+ * @param {(string|Object)} prop - Option key, or object of properties
+ * @param {mixed} [value] - Value of option (not used if object present)
+ * @param {boolean} [noRedraw] - Do not redraw the calendar afterwards
+ */
+export function set(key, val) {
+  let k = key
+
+  if (!key) return
+
+  // iterate over the object
+  if (typeof key === 'object') {
+
+    // prioritize serialize & deserialize
+    if (key.serialize) {
+      this.set('serialize', key.serialize)
+      delete key.serialize
+    }
+    if (key.deserialize) {
+      this.set('deserialize', key.deserialize)
+      delete key.deserialize
+    }
+
+    for (let k in key) this.set(k, key[k])
+    return this._opts
+  }
+
+  // setting part of object
+  if (key.indexOf('.') > 0) {
+    let p = key.split('.')
+    let v = val
+
+    key = p.unshift()
+    val = {}
+
+    p.reduce((r, o) => val[o] = {}, val)
+    val[p[p.length - 1]] = v
+  }
+
+  // default opts to pass to setters
+  let opts = deepExtend({}, this.constructor.defaults, this._opts)
+
+  // fix the value
+  if (key in this._setters) {
+    val = this._setters[key](val, opts)
+  }
+
+
+  if (typeof val === 'object')
+    val = deepExtend({}, opts[key], val)
+
+  // actually set the value
+  this._opts[key] = val
+
+  // rerender
+  if (!this._isOpen && this.wrapper) this.render()
+
+
+  // return value
+  return this.get(k)
+}
+
+/**
+ * Get an option
+ *
+ * @param {string} key - Option key
+ */
+export function get(key) {
+  return key.split('.').reduce((v, k) => v[k], this._opts)
 }
