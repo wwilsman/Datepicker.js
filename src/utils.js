@@ -1,7 +1,3 @@
-export function $(selector, ctx) {
-  return (ctx||document).querySelector(selector);
-}
-
 export function $$(selector, ctx) {
   var els = (ctx||document).querySelectorAll(selector);
   return Array.prototype.slice.call(els);
