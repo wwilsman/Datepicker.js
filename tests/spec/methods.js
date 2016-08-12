@@ -13,39 +13,52 @@ describe('Datepicker', function() {
 
   describe('#set', function() {
 
-    beforeEach(function() {
-      spyOn(datepicker, 'draw');
-      
-      datepicker.set('multiple', true);
-      
-      datepicker.set({
-        inline: true,
-        calendars: 2
-      });
-    });
-
     it('should set an option', function() {
+      datepicker.set('multiple', true);
+
       expect(datepicker.get('multiple')).toBeTruthy();
     });
 
     it('should set options from an object', function() {
+      expect(datepicker.get('inline')).toBeFalsy();
+      expect(datepicker.get('ranged')).toBeFalsy();
+
+      datepicker.set({
+        inline: true,
+        ranged: true
+      });
+
       expect(datepicker.get('inline')).toBeTruthy();
-      expect(datepicker.get('calendars')).toBe(2);
+      expect(datepicker.get('ranged')).toBeTruthy();
     });
 
-    it('should redraw when setting an option', function() {
-      expect(datepicker.draw).toHaveBeenCalled();
+    it('should rerender when setting an option', function() {
+      spyOn(datepicker, 'render');
+
+      datepicker.show();
+      datepicker.set('multiple', true);
+
+      expect(datepicker.render).toHaveBeenCalled();
     });
 
-    it('should only redraw once when setting multiple options', function() {
-      expect(datepicker.draw.calls.count()).toEqual(2);
+    it('should only rerender once when setting multiple options', function() {
+      spyOn(datepicker, 'render');
+
+      datepicker.show();
+      datepicker.set({
+        inline: true,
+        ranged: true
+      });
+
+      expect(datepicker.render.calls.count()).toEqual(1);
     });
 
-    it('should not redraw if third param is truthy', function() {
-      datepicker.set('multiple', false, true);
+    it('should not rerender if it isn\'t open', function() {
+      spyOn(datepicker, 'render');
 
-      expect(datepicker.get('multiple')).toBeFalsy();
-      expect(datepicker.draw.calls.count()).toEqual(2);
+      datepicker.set('multiple', true);
+
+      expect(datepicker.render.calls.count()).toEqual(0);
     });
   });
 
@@ -53,30 +66,6 @@ describe('Datepicker', function() {
 
     it('should retrieve an option', function() {
       expect(datepicker.get('multiple')).toBeFalsy();
-    });
-  });
-
-  describe('#update', function() {
-    var onUpdate = jasmine.createSpy();
-
-    beforeEach(function() {
-      spyOn(datepicker, 'update').and.callThrough();
-      
-      datepicker.set('onUpdate', onUpdate);
-      datepicker.setValue(this.date);
-    });
-
-    it('should be called when a value is toggled', function() {
-      expect(datepicker.update).toHaveBeenCalled();
-    });
-
-    it('should update the bound element\'s value', function() {
-      expect(datepicker.elem.value).not.toBe('');
-      expect(datepicker.elem.value).toBe(datepicker.toString());
-    });
-
-    it('should call onUpdate with the new value', function() {
-      expect(onUpdate).toHaveBeenCalledWith(this.date);
     });
   });
 
@@ -238,12 +227,12 @@ describe('Datepicker', function() {
       expect(datepicker.goToDate).toHaveBeenCalledWith(date);
     });
   });
-    
+
   describe('#goToDate', function() {
     var date;
 
     beforeEach(function() {
-      spyOn(datepicker, 'draw');
+      spyOn(datepicker, 'render');
 
       date = new Date(this.date);
       date.setDate(1);
@@ -255,8 +244,8 @@ describe('Datepicker', function() {
       expect(datepicker._c).toEqual(date);
     });
 
-    it('should redraw the calendar', function() {
-      expect(datepicker.draw).toHaveBeenCalled();
+    it('should rerender the calendar', function() {
+      expect(datepicker.render).toHaveBeenCalled();
     });
   });
 
@@ -290,7 +279,7 @@ describe('Datepicker', function() {
       expect(datepicker.toggleValue.calls.argsFor(0)).toEqual([this.date, true]);
     });
   });
-  
+
   describe('#removeDate', function() {
 
     it('should actually call #toggleValue with falsy second param', function() {
@@ -303,15 +292,16 @@ describe('Datepicker', function() {
   });
 
   describe('#toggleValue', function() {
+    var onUpdate = jasmine.createSpy();
     var date;
 
     beforeEach(function() {
       spyOn(datepicker, 'dateAllowed').and.callThrough();
-      spyOn(datepicker, 'update');
 
       date = new Date(this.date);
       date.setDate(date.getDate() + 1);
 
+      datepicker.set('onUpdate', onUpdate);
       datepicker.toggleValue(this.date);
     });
 
@@ -349,11 +339,16 @@ describe('Datepicker', function() {
       expect(datepicker.dateAllowed).toHaveBeenCalledWith(this.date);
     });
 
-    it('should update the datepicker', function() {
-      expect(datepicker.update).toHaveBeenCalled();
+    it('should update the bound element\'s value', function() {
+      expect(datepicker.elem.value).not.toBe('');
+      expect(datepicker.elem.value).toBe(datepicker.toString());
+    });
+
+    it('should call onUpdate with the new value', function() {
+      expect(onUpdate).toHaveBeenCalledWith(this.date);
     });
   });
-  
+
   describe('#setValue', function() {
 
     beforeEach(function() {
@@ -375,7 +370,7 @@ describe('Datepicker', function() {
       expect(datepicker.getValue()).toContain(date);
     });
   });
-  
+
   describe('#getValue', function() {
 
     beforeEach(function() {
@@ -408,28 +403,28 @@ describe('Datepicker', function() {
 
     it('should only allow dates above min', function() {
       datepicker.set('min', dates[1]);
-      
+
       expect(datepicker.dateAllowed(dates[2])).toBeTruthy();
       expect(datepicker.dateAllowed(dates[0])).toBeFalsy();
     });
 
     it('should only allow dates below max', function() {
       datepicker.set('max', dates[1]);
-      
+
       expect(datepicker.dateAllowed(dates[0])).toBeTruthy();
       expect(datepicker.dateAllowed(dates[2])).toBeFalsy();
     });
 
     it('should only allow dates within array', function() {
       datepicker.set('within', dates);
-      
+
       expect(datepicker.dateAllowed(dates[0])).toBeTruthy();
       expect(datepicker.dateAllowed(date)).toBeFalsy();
     });
 
     it('should only allow dates not within array', function() {
       datepicker.set('without', dates);
-      
+
       expect(datepicker.dateAllowed(date)).toBeTruthy();
       expect(datepicker.dateAllowed(dates[0])).toBeFalsy();
     });
@@ -462,8 +457,8 @@ describe('Datepicker', function() {
       expect(datepicker.dateAllowed(date, 'year')).toBeFalsy();
     });
   });
-  
-  describe('#draw', function() {
+
+  describe('#render', function() {
 
     it('should render the calendar as needed', function() {
       spyOn(datepicker, 'render').and.callThrough();
