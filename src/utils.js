@@ -132,6 +132,15 @@ export function dateRange(start, end) {
   return dates;
 }
 
+export function isPlainObject(obj) {
+  if (typeof obj == 'object' && obj !== null) {
+    var proto = Object.getPrototypeOf(obj);
+    return proto === Object.prototype || proto === null;
+  }
+
+  return false;
+}
+
 export function deepExtend(obj) {
   var other = Array.prototype.slice.call(arguments, 1);
 
