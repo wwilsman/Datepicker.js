@@ -29,8 +29,7 @@ export default {
 
   i18n: {
     months: ['January','February','March','April','May','June','July','August','September','October','November','December'],
-    weekdays: ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
-    weekdaysShort: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
+    weekdays: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
   },
 
   classNames: {
@@ -38,7 +37,11 @@ export default {
     wrapper: 'datepicker__wrapper',
     inline: 'is-inline',
     selected: 'is-selected',
-    highlight: 'is-highlighted'
+    disabled: 'is-disabled',
+    highlighted: 'is-highlighted',
+    otherMonth: 'is-otherMonth',
+    weekend: 'is-weekend',
+    today: 'is-today'
   },
 
   templates: {
@@ -52,8 +55,8 @@ export default {
     header: [
       '<header class="datepicker__header">',
         '<a class="datepicker__prev<%= (hasPrev) ? "" : " is-disabled" %>" data-prev>&lsaquo;</a>',
-        '<span class="datepicker__title" data-title><%= month %><%= renderMonthSelect() %></span>',
-        '<span class="datepicker__title" data-title><%= year %><%= renderYearSelect() %></span>',
+        '<span class="datepicker__title" data-title><%= renderMonthSelect() %></span>',
+        '<span class="datepicker__title" data-title><%= renderYearSelect() %></span>',
         '<a class="datepicker__next<%= (hasNext) ? "" : " is-disabled" %>" data-next>&rsaquo;</a>',
       '</header>'
     ].join(''),
@@ -62,7 +65,7 @@ export default {
       '<table class="datepicker__cal">',
         '<thead>',
           '<tr>',
-            '<% weekdaysShort.forEach(function(name) { %>',
+            '<% weekdays.forEach(function(name) { %>',
               '<th><%= name %></th>',
             '<% }); %>',
           '</tr>',
@@ -78,12 +81,8 @@ export default {
     ].join(''),
 
     day: [
-      '<% var cls = ["datepicker__day"]; %>',
-      '<% if (isSelected) cls.push("is-selected"); %>',
-      '<% if (isDisabled) cls.push("is-disabled"); %>',
-      '<% if (!isThisMonth) cls.push("is-otherMonth"); %>',
-      '<% if (isToday) cls.push("is-today"); %>',
-      '<td class="<%= cls.join(" ") %>" data-day="<%= date %>"><div>',
+      '<% classNames.push("datepicker__day"); %>',
+      '<td class="<%= classNames.join(" ") %>" data-day="<%= date %>"><div>',
         '<span class="datepicker__daynum"><%= daynum %></span>',
       '</div></td>'
     ].join('')

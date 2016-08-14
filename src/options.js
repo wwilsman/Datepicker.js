@@ -9,8 +9,43 @@ import {
 // update inline className
 export function updateInline(isInline, opts) {
   let { classNames: { inline: inlineClass } } = opts
-  if (this.node) toggleClass(this.node, inlineClass, isInline)
+
+  if (this.node) {
+    toggleClass(this.node, inlineClass, isInline)
+    this.wrapper.style.position = isInline ? '' : 'absolute'
+    this.wrapper.style.display = isInline ? '' : 'none'
+  }
+
+  this._isOpen = isInline
   return isInline
+}
+
+// update classNames
+export function updateClassNames(classNames, opts) {
+  let {
+    base: baseClass,
+    inline: inlineClass,
+    wrapper: wrapperClass
+  } = classNames
+
+  let { inline: isInline } = opts
+
+  if (this.node) {
+    for (let key in classNames) {
+      switch (key) {
+        case 'base':
+        case 'inline':
+          this.node.className = baseClass + (isInline ? ` ${inlineClass}` : '')
+          break
+
+        case 'wrapper':
+          this.wrapper.className = wrapperClass
+          break
+      }
+    }
+  }
+
+  return classNames
 }
 
 // deserialize min/max
@@ -61,6 +96,11 @@ export function deserializeOpenOn(openOn, opts) {
 // constrain weekstart
 export function constrainWeekstart(weekstart) {
   return Math.min(Math.max(weekstart, 0), 6)
+}
+
+// bind option functions
+export function bindOptionFunctions(fn) {
+  return (typeof fn === 'function') ? fn.bind(this) : false
 }
 
 // template functions
