@@ -35,12 +35,12 @@
       if ((tab = $('#' + pre + '-' + type, el))) {
         var code = $('pre code', tab);
         tab.dataset.type = type;
-        
+
         if (type == 'html') {
           code.innerHTML = htmlEntities(code.innerHTML);
         } else if (type == 'js') {
           var tag = document.createElement('script');
-          tag.innerHTML = code.innerHTML;
+          tag.innerHTML = htmlEntities(code.innerHTML, true);
           preview.appendChild(tag);
         } else if (type == 'css') {
           var tag = document.createElement('style');
@@ -102,7 +102,12 @@
     parent.insertBefore(node, parent.firstChild);
   }
 
-  function htmlEntities(str) {
+  function htmlEntities(str, reverse) {
+    if (reverse) {
+      return str.replace(/&amp;/g, '&').replace(/&quot;/g, '"')
+        .replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+    }
+
     return str.replace(/&/g, '&amp;').replace(/"/g, '&quot;')
       .replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }

@@ -10,7 +10,7 @@
 
   <!-- <link rel="stylesheet" href="https://rawgit.com/wwilsman/datepicker/master/datepicker.css"> -->
   <!-- <script src="https://rawgit.com/wwilsman/datepicker/master/datepicker.js"></script> -->
-  <!-- <link rel="stylesheet" href="datepicker.css"> -->
+  <link rel="stylesheet" href="../dist/css/datepicker.material.css">
   <script src="../dist/datepicker.js"></script>
 
   <link rel="stylesheet" href="demo.css">
@@ -128,21 +128,39 @@
 
       <div class="example">
         <div class="example__desc">
-          <h3>Inline, Responsive, Multiple Calendars</h3>
-          <p>Set the main calendar with <code>index</code>. Add a class for custom styles.</p>
+          <h3>Advanced Customizations</h3>
+          <p>Alter templates &amp; add classNames for custom styles.</p>
         </div>
         <div class="tabs tabs--full" data-prefix="inline">
           <div class="tabs__wrapper">
             <div class="tabs__content" id="inline-css"><pre class="language-css"><code>
+              .datepicker.custom {
+                display: block;
+              }
+
               .datepicker.custom table th {
                 color: #888;
               }
 
-              .datepicker.custom .datepicker__container {
+              .datepicker.custom .datepicker__wrapper {
                 background: #333;
+                width: 100%;
+                padding: 0;
               }
 
-              .datepicker.custom .datepicker__day div:hover {
+              .datepicker.custom .datepicker__pane {
+                float: left;
+                width: 33.333%;
+                padding: 0.5rem;
+              }
+
+              .datepicker.custom .datepicker__pane:not(:first-child) .datepicker__prev,
+              .datepicker.custom .datepicker__pane:not(:last-child) .datepicker__next {
+                display: none;
+              }
+
+              .datepicker.custom .datepicker__day div:hover,
+              .datepicker.custom .datepicker__day.is-highlighted:not(.is-selected) div {
                 background: #444;
               }
 
@@ -150,8 +168,15 @@
                 color: white;
               }
 
-              .datepicker.custom .datepicker__day.is-selected:not(.is-highlighted) div:hover {
+              .datepicker.custom .datepicker__day.is-selected div:hover {
                 background: #2196F3;
+              }
+
+              .datepicker.custom .datepicker__day.is-disabled.is-selected div,
+              .datepicker.custom .datepicker__day.is-otherMonth.is-selected div,
+              .datepicker.custom .datepicker__day.is-disabled.is-selected + .is-selected div::before,
+              .datepicker.custom .datepicker__day.is-otherMonth.is-selected + .is-selected div::before {
+                background: #444;
               }
 
               .datepicker.custom .datepicker__day.is-disabled .datepicker__daynum,
@@ -160,45 +185,33 @@
               }
 
               .datepicker.custom .datepicker__day.is-disabled.is-selected .datepicker__daynum,
-              .datepicker.custom .datepicker__day.is-disabled.is-highlighted .datepicker__daynum,
-              .datepicker.custom .datepicker__day.is-otherMonth.is-selected .datepicker__daynum,
-              .datepicker.custom .datepicker__day.is-otherMonth.is-highlighted .datepicker__daynum {
+              .datepicker.custom .datepicker__day.is-otherMonth.is-selected .datepicker__daynum {
                 color: rgba(255,255,255,0.1);
-              }
-
-              .datepicker.custom .datepicker__day.is-disabled.is-selected div,
-              .datepicker.custom .datepicker__day.is-disabled.is-highlighted div,
-              .datepicker.custom .datepicker__day.is-otherMonth.is-selected div,
-              .datepicker.custom .datepicker__day.is-otherMonth.is-highlighted div,
-              .datepicker.custom .datepicker__day.is-disabled.is-selected:not(.is-highlighted) + .datepicker__day.is-selected:not(.is-highlighted) div::before,
-              .datepicker.custom .datepicker__day.is-disabled.is-selected:not(.is-highlighted) + .datepicker__day.is-highlighted:not(.is-selected) div::before,
-              .datepicker.custom .datepicker__day.is-disabled.is-highlighted:not(.is-selected) + .datepicker__day.is-selected:not(.is-highlighted) div::before,
-              .datepicker.custom .datepicker__day.is-disabled.is-highlighted:not(.is-selected) + .datepicker__day.is-highlighted:not(.is-selected) div::before,
-              .datepicker.custom .datepicker__day.is-otherMonth.is-selected:not(.is-highlighted) + .datepicker__day.is-selected:not(.is-highlighted) div::before,
-              .datepicker.custom .datepicker__day.is-otherMonth.is-selected:not(.is-highlighted) + .datepicker__day.is-highlighted:not(.is-selected) div::before,
-              .datepicker.custom .datepicker__day.is-otherMonth.is-highlighted:not(.is-selected) + .datepicker__day.is-selected:not(.is-highlighted) div::before,
-              .datepicker.custom .datepicker__day.is-otherMonth.is-highlighted:not(.is-selected) + .datepicker__day.is-highlighted:not(.is-selected) div::before {
-                background: #444;
               }
             </code></pre></div>
             <div class="tabs__content" id="inline-html"><pre class="language-html"><code>
-              <input type="hidden" id="inline">
+              <input type="hidden" id="custom">
             </code></pre></div>
             <div class="tabs__content" id="inline-js"><pre class="language-javascript"><code>
-              var inline = new Datepicker('#inline', {
-                class: 'custom',
+              var custom = new Datepicker('#custom', {
                 multiple: true,
                 inline: true,
 
-                responsive: {
-                  '(min-width: 40rem)': {
-                    calendars: 2,
-                  },
+                classNames: {
+                  base: 'datepicker custom'
+                },
 
-                  '(min-width: 53rem)': {
-                    calendars: 3,
-                    index: 1
-                  }
+                templates: {
+                  container: [
+                    '&lt;div class="datepicker__container"&gt;',
+                      '&lt;% for (var i = -1; i &lt;= 1; i++) { %&gt;',
+                        '&lt;div class="datepicker__pane"&gt;',
+                          '&lt;%= renderHeader(i) %&gt;',
+                          '&lt;%= renderCalendar(i) %&gt;',
+                        '&lt;/div&gt;',
+                      '&lt;% } %&gt;',
+                    '&lt;/div&gt;'
+                  ].join('')
                 }
               });
             </code></pre></div>
