@@ -1,11 +1,11 @@
 {
-  "name": "datepicker.js",
+  "name": "Datepicker.js",
   "version": "0.0.1-beta2",
   "description": "A pure JS datepicker",
   "main": "dist/datepicker.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/wwilsman/datepicker.git"
+    "url": "git+https://github.com/wwilsman/Datepicker.js.git"
   },
   "keywords": [
     "datepicker",
@@ -16,9 +16,9 @@
   "author": "Wil Wilsman",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/wwilsman/datepicker/issues"
+    "url": "https://github.com/wwilsman/Datepicker.js/issues"
   },
-  "homepage": "https://wwilsman.github.io/datepicker",
+  "homepage": "https://wwilsman.github.io/Datepicker.js",
   "scripts": {
     "test": "phantomjs tests/run-jasmine.js tests/index.html",
     "watch": "nodemon -w src -e js -x \"npm run build\"",
