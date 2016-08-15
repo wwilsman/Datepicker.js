@@ -73,7 +73,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _utils = __webpack_require__(2);
+	var _helpers = __webpack_require__(2);
 
 	var _defaults = __webpack_require__(3);
 
@@ -131,7 +131,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        // class/tag selector
 	      } else {
-	        return (0, _utils.$$)(elem).map(function (el) {
+	        return (0, _helpers.$$)(elem).map(function (el) {
 	          return new _this.constructor(el, opts);
 	        });
 	      }
@@ -207,11 +207,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      // setup renderers
 	      this._renderers = {
-	        select: (0, _utils.tmpl)(['<span style="position:relative"><%= o[c] %>', '<select data-<%= t %>="<%= c %>" data-index="<%= i %>"', 'style="position:absolute;top:0;left:0;width:100%;height:100%;margin:0;opacity:0.005;">', '<% for (var v in o) { %>', '<option value="<%= v %>"<%= (v === c) ? " selected" : "" %>><%= o[v] %></option>', '<% } %>', '</select>', '</span>'].join(''))
+	        select: (0, _helpers.tmpl)(['<span style="position:relative"><%= o[c] %>', '<select data-<%= t %>="<%= c %>" data-index="<%= i %>"', 'style="position:absolute;top:0;left:0;width:100%;height:100%;margin:0;opacity:0.005;">', '<% for (var v in o) { %>', '<option value="<%= v %>"<%= (v === c) ? " selected" : "" %>><%= o[v] %></option>', '<% } %>', '</select>', '</span>'].join(''))
 	      };
 
 	      // set all the options
-	      this.set((0, _utils.deepExtend)({}, this.constructor.defaults, (0, _utils.getDataAttributes)(this._el), opts));
+	      this.set((0, _helpers.deepExtend)({}, this.constructor.defaults, (0, _helpers.getDataAttributes)(this._el), opts));
 	    }
 
 	    /**
@@ -306,17 +306,28 @@ return /******/ (function(modules) { // webpackBootstrap
 	    key: '_onmousedown',
 	    value: function _onmousedown(e) {
 	      var _opts = this._opts;
+	      var multiple = _opts.multiple;
 	      var deserialize = _opts.deserialize;
-	      var highlightedClass = _opts.classNames.highlighted;
+	      var _opts$classNames = _opts.classNames;
+	      var selectedClass = _opts$classNames.selected;
+	      var highlightedClass = _opts$classNames.highlighted;
 
 
-	      var dateNode = (0, _utils.closest)(e.target, '[data-day]', this.node);
+	      var dateNode = (0, _helpers.closest)(e.target, '[data-day]', this.wrapper);
 
 	      if (dateNode) {
 	        this._highlighted = [];
 	        this._isDragging = true;
 	        this._dragDate = deserialize(dateNode.dataset.day);
-	        (0, _utils.addClass)(dateNode, highlightedClass);
+
+	        if (!multiple) {
+	          (0, _helpers.$$)('[data-day].' + selectedClass, this.wrapper).forEach(function (el) {
+	            (0, _helpers.removeClass)(el, selectedClass);
+	          });
+	        }
+
+	        (0, _helpers.toggleClass)(dateNode, selectedClass, !this.hasDate(this._dragDate));
+	        (0, _helpers.addClass)(dateNode, highlightedClass);
 	      }
 	    }
 
@@ -333,24 +344,29 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var multiple = _opts2.multiple;
 	      var serialize = _opts2.serialize;
 	      var deserialize = _opts2.deserialize;
-	      var highlightedClass = _opts2.classNames.highlighted;
+	      var _opts2$classNames = _opts2.classNames;
+	      var selectedClass = _opts2$classNames.selected;
+	      var highlightedClass = _opts2$classNames.highlighted;
 
 
 	      if (!multiple) return;
 
-	      var dateNode = (0, _utils.closest)(e.target, '[data-day]', this.node);
+	      var dateNode = (0, _helpers.closest)(e.target, '[data-day]', this.wrapper);
 	      var date = dateNode ? deserialize(dateNode.dataset.day) : null;
+	      var doSelect = !this.hasDate(this._dragDate);
 
-	      if (date && this._isDragging && (0, _utils.compareDates)(date, this._dragDate)) {
-	        this._highlighted = (0, _utils.dateRange)(this._dragDate, date);
+	      if (this._isDragging && date) {
+	        this._highlighted = (0, _helpers.dateRange)(this._dragDate, date);
 
-	        (0, _utils.$$)('[data-day].' + highlightedClass, this.wrapper).forEach(function (el) {
-	          (0, _utils.removeClass)(el, highlightedClass);
+	        (0, _helpers.$$)('[data-day].' + highlightedClass, this.wrapper).forEach(function (el) {
+	          (0, _helpers.toggleClass)(el, selectedClass, _this3.hasDate(el.dataset.day));
+	          (0, _helpers.removeClass)(el, highlightedClass);
 	        });
 
-	        this._highlighted.map(serialize).forEach(function (d) {
-	          (0, _utils.$$)('[data-day="' + d + '"]', _this3.wrapper).forEach(function (el) {
-	            (0, _utils.toggleClass)(el, highlightedClass);
+	        this._highlighted.forEach(function (d) {
+	          (0, _helpers.$$)('[data-day="' + serialize(d) + '"]', _this3.wrapper).forEach(function (el) {
+	            (0, _helpers.toggleClass)(el, selectedClass, doSelect);
+	            (0, _helpers.addClass)(el, highlightedClass);
 	          });
 	        });
 	      }
@@ -374,8 +390,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      // remove the highlighting
 
-	      (0, _utils.$$)('[data-day].' + highlightedClass, this.wrapper).forEach(function (el) {
-	        (0, _utils.removeClass)(el, highlightedClass);
+	      (0, _helpers.$$)('[data-day].' + highlightedClass, this.wrapper).forEach(function (el) {
+	        (0, _helpers.removeClass)(el, highlightedClass);
 	      });
 
 	      // make sure we've got at least one
@@ -384,22 +400,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 
 	      // only do this stuff if we've made a selection
-	      if (this._isDragging && (0, _utils.closest)(e.target, '[data-day]', this.node)) {
+	      if (this._isDragging && (0, _helpers.closest)(e.target, '[data-day]', this.node)) {
 
 	        // actually make the selection
 	        this.toggleDate(this._highlighted, !this.hasDate(this._dragDate));
 
 	        // update the elements without refreshing the calendar
 	        this._highlighted.map(serialize).forEach(function (d) {
-	          (0, _utils.$$)('[data-day="' + d + '"]', _this4.wrapper).forEach(function (el) {
-	            (0, _utils.toggleClass)(el, selectedClass, _this4.hasDate(d));
+	          (0, _helpers.$$)('[data-day="' + d + '"]', _this4.wrapper).forEach(function (el) {
+	            (0, _helpers.toggleClass)(el, selectedClass, _this4.hasDate(d));
 	          });
 	        });
 
 	        // you can't select multiple, hide the calendar
 	        if (!multiple) {
-	          (0, _utils.$$)('[data-day].' + selectedClass, this.wrapper).forEach(function (el) {
-	            (0, _utils.toggleClass)(el, selectedClass, _this4.hasDate(el.dataset.day));
+	          (0, _helpers.$$)('[data-day].' + selectedClass, this.wrapper).forEach(function (el) {
+	            (0, _helpers.toggleClass)(el, selectedClass, _this4.hasDate(el.dataset.day));
 	          });
 
 	          this.hide();
@@ -462,7 +478,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (!key) return;
 
 	      // iterate over the object
-	      if ((0, _utils.isPlainObject)(key)) {
+	      if ((0, _helpers.isPlainObject)(key)) {
 
 	        // don't render yet
 	        this._noRender = true;
@@ -506,15 +522,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 
 	      // default opts to pass to setters
-	      var opts = (0, _utils.deepExtend)({}, this.constructor.defaults, this._opts);
+	      var opts = (0, _helpers.deepExtend)({}, this.constructor.defaults, this._opts);
 
 	      // fix the value
 	      if (key in this._setters) {
 	        val = this._setters[key](val, opts);
 	      }
 
-	      if ((0, _utils.isPlainObject)(val)) {
-	        val = (0, _utils.deepExtend)({}, opts[key], val);
+	      if ((0, _helpers.isPlainObject)(val)) {
+	        val = (0, _helpers.deepExtend)({}, opts[key], val);
 	      }
 
 	      // actually set the value
@@ -570,7 +586,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 
 	      // still not valid? then open to today
-	      if (!(0, _utils.isValidDate)(date)) {
+	      if (!(0, _helpers.isValidDate)(date)) {
 	        date = new Date();
 	      }
 
@@ -680,7 +696,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'goToDate',
 	    value: function goToDate(date) {
-	      date = (0, _utils.setToStart)(this._opts.deserialize(date));
+	      date = (0, _helpers.setToStart)(this._opts.deserialize(date));
 	      date.setDate(1);
 
 	      this._month = date;
@@ -699,7 +715,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'hasDate',
 	    value: function hasDate(date) {
-	      date = (0, _utils.setToStart)(this._opts.deserialize(date));
+	      date = (0, _helpers.setToStart)(this._opts.deserialize(date));
 	      return !!this._selected && !!this._selected[date.getTime()];
 	    }
 
@@ -749,7 +765,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      });
 
 	      dates.forEach(function (d) {
-	        d = (0, _utils.setToStart)(deserialize(d));
+	        d = (0, _helpers.setToStart)(deserialize(d));
 	        var t = d.getTime();
 
 	        // add the date
@@ -787,7 +803,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var selected = [];
 	      for (var t in this._selected) {
 	        selected.push(this._selected[t]);
-	      }return this._opts.multiple ? selected.sort(_utils.compareDates) : selected[0];
+	      }return this._opts.multiple ? selected.sort(_helpers.compareDates) : selected[0];
 	    }
 
 	    /**
@@ -811,7 +827,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'getValue',
 	    value: function getValue() {
-	      var selected = (0, _utils.transform)(this.getDate() || [], this._opts.serialize, this);
+	      var selected = (0, _helpers.transform)(this.getDate() || [], this._opts.serialize, this);
 	      return [].concat(selected).join(this._opts.separator);
 	    }
 
@@ -848,7 +864,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var belowMax = void 0,
 	          aboveMin = belowMax = true;
 
-	      date = (0, _utils.setToStart)(deserialize(date));
+	      date = (0, _helpers.setToStart)(deserialize(date));
 
 	      if (dim == 'month') {
 	        aboveMin = !min || date.getMonth() >= min.getMonth();
@@ -861,7 +877,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        belowMax = !max || date <= max;
 	      }
 
-	      return aboveMin && belowMax && (!without || !(0, _utils.dateInArray)(date, without, dim)) && (!within || (0, _utils.dateInArray)(date, within, dim));
+	      return aboveMin && belowMax && (!without || !(0, _helpers.dateInArray)(date, without, dim)) && (!within || (0, _helpers.dateInArray)(date, within, dim));
 	    }
 
 	    /**
@@ -1011,7 +1027,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      var prevMonth = new Date(date.getTime());
 	      prevMonth.setMonth(prevMonth.getMonth() - 1);
-	      prevMonth.setDate((0, _utils.getDaysInMonth)(prevMonth));
+	      prevMonth.setDate((0, _helpers.getDaysInMonth)(prevMonth));
 
 	      // collect the days' data
 	      var days = [];
@@ -1021,11 +1037,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	      while (start < 0) {
 	        start += 7;
 	      } // number of days in the month, padded to fit a calendar
-	      var dayCount = (0, _utils.getDaysInMonth)(year, month) + start;
+	      var dayCount = (0, _helpers.getDaysInMonth)(year, month) + start;
 	      while (dayCount % 7) {
 	        dayCount += 1;
 	      } // today!
-	      var today = (0, _utils.setToStart)(new Date());
+	      var today = (0, _helpers.setToStart)(new Date());
 
 	      // loop through the calendar days
 	      for (var i = 0; i < dayCount; i++) {
@@ -1382,7 +1398,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.bindOptionFunctions = bindOptionFunctions;
 	exports.createTemplateRenderers = createTemplateRenderers;
 
-	var _utils = __webpack_require__(2);
+	var _helpers = __webpack_require__(2);
 
 	// update inline className
 	function updateInline(isInline, opts) {
@@ -1390,7 +1406,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	  if (this.node) {
-	    (0, _utils.toggleClass)(this.node, inlineClass, isInline);
+	    (0, _helpers.toggleClass)(this.node, inlineClass, isInline);
 	    this.wrapper.style.position = isInline ? '' : 'absolute';
 	    this.wrapper.style.display = isInline ? '' : 'none';
 	  }
@@ -1429,8 +1445,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	function deserializeMinMax(value, opts) {
 	  var deserialize = opts.deserialize;
 
-	  value = !value ? false : (0, _utils.transform)(value, deserialize, this);
-	  return (0, _utils.isValidDate)(value) ? value : false;
+	  value = !value ? false : (0, _helpers.transform)(value, deserialize, this);
+	  return (0, _helpers.isValidDate)(value) ? value : false;
 	}
 
 	// deserialze within/without
@@ -1439,8 +1455,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	  if (arr.length) {
-	    arr = (0, _utils.setToStart)((0, _utils.transform)(arr, deserialize, this));
-	    arr = [].concat(arr).filter(_utils.isValidDate);
+	    arr = (0, _helpers.setToStart)((0, _helpers.transform)(arr, deserialize, this));
+	    arr = [].concat(arr).filter(_helpers.isValidDate);
 	  }
 
 	  return arr.length ? arr : false;
@@ -1454,16 +1470,16 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  if (typeof openOn == 'string' && !/^(first|last|today)$/.test(openOn)) {
 	    openOn = deserialize.call(this, openOn);
-	    if (!(0, _utils.isValidDate)(openOn)) openOn = new Date();
+	    if (!(0, _helpers.isValidDate)(openOn)) openOn = new Date();
 	  }
 
 	  // set the initial calendar date
 	  if (!this._month) {
 	    var date = openOn;
 
-	    if (typeof date === 'string' || !(0, _utils.isValidDate)(date)) date = new Date();
+	    if (typeof date === 'string' || !(0, _helpers.isValidDate)(date)) date = new Date();
 
-	    date = (0, _utils.setToStart)(new Date(date.getTime()));
+	    date = (0, _helpers.setToStart)(new Date(date.getTime()));
 	    date.setDate(1);
 
 	    this._month = date;
@@ -1487,7 +1503,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  this._renderers = this._renderers || {};
 
 	  for (var name in templates) {
-	    this._renderers[name] = (0, _utils.tmpl)(templates[name]);
+	    this._renderers[name] = (0, _helpers.tmpl)(templates[name]);
 	  }
 
 	  return templates;

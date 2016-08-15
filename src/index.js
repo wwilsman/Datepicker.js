@@ -15,7 +15,7 @@ import {
   deepExtend,
   transform,
   tmpl
-} from './utils.js'
+} from './helpers.js'
 
 import defaultOptions from './defaults'
 
@@ -236,18 +236,28 @@ export default class Datepicker {
    */
   _onmousedown(e) {
     let {
+      multiple,
       deserialize,
       classNames: {
+        selected: selectedClass,
         highlighted: highlightedClass
       }
     } = this._opts
 
-    let dateNode = closest(e.target, '[data-day]', this.node)
+    let dateNode = closest(e.target, '[data-day]', this.wrapper)
 
     if (dateNode) {
       this._highlighted = []
       this._isDragging = true
       this._dragDate = deserialize(dateNode.dataset.day)
+
+      if (!multiple) {
+        $$(`[data-day].${selectedClass}`, this.wrapper).forEach((el) => {
+          removeClass(el, selectedClass)
+        })
+      }
+
+      toggleClass(dateNode, selectedClass, !this.hasDate(this._dragDate))
       addClass(dateNode, highlightedClass)
     }
   }
@@ -261,25 +271,29 @@ export default class Datepicker {
       serialize,
       deserialize,
       classNames: {
+        selected: selectedClass,
         highlighted: highlightedClass
       }
     } = this._opts
 
     if (!multiple) return
 
-    let dateNode = closest(e.target, '[data-day]', this.node)
+    let dateNode = closest(e.target, '[data-day]', this.wrapper)
     let date = dateNode ? deserialize(dateNode.dataset.day) : null
+    let doSelect = !this.hasDate(this._dragDate)
 
-    if (date && this._isDragging && compareDates(date, this._dragDate)) {
+    if (this._isDragging && date) {
       this._highlighted = dateRange(this._dragDate, date)
 
       $$(`[data-day].${highlightedClass}`, this.wrapper).forEach((el) => {
+        toggleClass(el, selectedClass, this.hasDate(el.dataset.day))
         removeClass(el, highlightedClass)
       })
 
-      this._highlighted.map(serialize).forEach((d) => {
-        $$('[data-day="' + d + '"]', this.wrapper).forEach((el) => {
-          toggleClass(el, highlightedClass)
+      this._highlighted.forEach((d) => {
+        $$('[data-day="' + serialize(d) + '"]', this.wrapper).forEach((el) => {
+          toggleClass(el, selectedClass, doSelect)
+          addClass(el, highlightedClass)
         })
       })
     }

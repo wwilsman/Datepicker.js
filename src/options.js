@@ -4,7 +4,7 @@ import {
   setToStart,
   transform,
   tmpl
-} from './utils'
+} from './helpers'
 
 // update inline className
 export function updateInline(isInline, opts) {
