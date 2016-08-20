@@ -111,7 +111,7 @@ describe('Datepicker', function() {
     it('should position the datepicker below, to the left', function() {
       datepicker.show();
 
-      expect(datepicker.wrapper.style.top).toEqual('100%');
+      expect(datepicker.wrapper.style.top).not.toEqual('');
       expect(datepicker.wrapper.style.left).toEqual('0px');
       expect(datepicker.wrapper.style.bottom).toEqual('');
       expect(datepicker.wrapper.style.right).toEqual('');
@@ -122,7 +122,7 @@ describe('Datepicker', function() {
       datepicker.node.style.right = 0;
       datepicker.show();
 
-      expect(datepicker.wrapper.style.top).toEqual('100%');
+      expect(datepicker.wrapper.style.top).not.toEqual('');
       expect(datepicker.wrapper.style.left).toEqual('');
       expect(datepicker.wrapper.style.bottom).toEqual('');
       expect(datepicker.wrapper.style.right).toEqual('0px');
@@ -135,7 +135,7 @@ describe('Datepicker', function() {
 
       expect(datepicker.wrapper.style.top).toEqual('');
       expect(datepicker.wrapper.style.left).toEqual('0px');
-      expect(datepicker.wrapper.style.bottom).toEqual('100%');
+      expect(datepicker.wrapper.style.bottom).not.toEqual('');
       expect(datepicker.wrapper.style.right).toEqual('');
     });
 
@@ -146,7 +146,7 @@ describe('Datepicker', function() {
 
       expect(datepicker.wrapper.style.top).toEqual('');
       expect(datepicker.wrapper.style.left).toEqual('');
-      expect(datepicker.wrapper.style.bottom).toEqual('100%');
+      expect(datepicker.wrapper.style.bottom).not.toEqual('');
       expect(datepicker.wrapper.style.right).toEqual('0px');
     });
   });
@@ -458,11 +458,11 @@ describe('Datepicker', function() {
   describe('#render', function() {
 
     it('should call for calendar data', function() {
-      spyOn(datepicker, 'getCalendar').and.callThrough();
+      spyOn(datepicker, 'getData').and.callThrough();
 
       datepicker.render();
 
-      expect(datepicker.getCalendar).toHaveBeenCalled();
+      expect(datepicker.getData).toHaveBeenCalled();
     });
 
     it('should update the wrapper innerHTML', function() {
@@ -484,20 +484,20 @@ describe('Datepicker', function() {
     });
   });
 
-  describe('#getCalendar', function() {
+  describe('#getData', function() {
     var data;
 
     beforeEach(function() {
       data = [];
 
-      var og = datepicker.getCalendar;
-      spyOn(datepicker, 'getCalendar').and.callFake(function() {
+      var og = datepicker.getData;
+      spyOn(datepicker, 'getData').and.callFake(function() {
         var ret = og.apply(this, arguments);
         data.push(ret);
         return ret;
       });
 
-      datepicker.getCalendar();
+      datepicker.getData();
     });
 
     it('should represent this month', function() {
@@ -514,7 +514,7 @@ describe('Datepicker', function() {
         max: this.date
       });
 
-      datepicker.getCalendar();
+      datepicker.getData();
 
       expect(data[1].hasPrev).toBeFalsy();
       expect(data[1].hasNext).toBeFalsy();
@@ -525,7 +525,7 @@ describe('Datepicker', function() {
 
       datepicker.setDate(day._date);
       datepicker.set('max', day._date);
-      datepicker.getCalendar();
+      datepicker.getData();
 
       day = data[1].days[7];
 

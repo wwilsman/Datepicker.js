@@ -112,8 +112,8 @@ export function setToStart(date) {
 }
 
 export function dateRange(start, end) {
-  start = new Date(start.getTime());
-  end = new Date(end.getTime());
+  start = new Date(start);
+  end = new Date(end);
   var date = start;
 
   if (start > end) {

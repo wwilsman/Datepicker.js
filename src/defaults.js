@@ -82,7 +82,7 @@ export default {
 
     day: [
       '<% classNames.push("datepicker__day"); %>',
-      '<td class="<%= classNames.join(" ") %>" data-day="<%= date %>"><div>',
+      '<td class="<%= classNames.join(" ") %>" data-day="<%= timestamp %>"><div>',
         '<span class="datepicker__daynum"><%= daynum %></span>',
       '</div></td>'
     ].join('')

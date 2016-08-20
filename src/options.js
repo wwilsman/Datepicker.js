@@ -105,9 +105,8 @@ export function bindOptionFunctions(fn) {
 
 // template functions
 export function createTemplateRenderers(templates) {
-  this._renderers = this._renderers || {}
-
   for (let name in templates) {
+    if (name === 'select') continue
     this._renderers[name] = tmpl(templates[name])
   }
 
