@@ -95,7 +95,28 @@
 
       <div class="example">
         <div class="example__desc">
-          <h3>Inline &amp; Constraints</h3>
+          <h3>Ranged &amp; Time Picker</h3>
+          <p>Set to inline on hidden inputs.</p>
+        </div>
+        <div class="tabs" data-prefix="ranged">
+          <div class="tabs__wrapper">
+            <div class="tabs__content" id="ranged-html"><pre class="language-html"><code>
+              <input type="hidden" id="ranged">
+            </code></pre></div>
+            <div class="tabs__content" id="ranged-js"><pre class="language-javascript"><code>
+              var ranged = new Datepicker('#ranged', {
+                inline: true,
+                ranged: true,
+                time: true
+              });
+            </code></pre></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="example">
+        <div class="example__desc">
+          <h3>Data Attributes &amp; Constraints</h3>
           <p>Data attributes override options.</p>
         </div>
         <div class="tabs" data-prefix="constrained">
@@ -107,17 +128,17 @@
             <div class="tabs__content" id="constrained-js"><pre class="language-javascript"><code>
               var constrained = new Datepicker('#constrained', {
 
-                // 6 days in the past
+                // 10 days in the past
                 min: (function(){
                   var date = new Date();
-                  date.setDate(date.getDate() - 6);
+                  date.setDate(date.getDate() - 10);
                   return date;
                 })(),
 
-                // 7 days in the future
+                // 10 days in the future
                 max: (function(){
                   var date = new Date();
-                  date.setDate(date.getDate() + 7);
+                  date.setDate(date.getDate() + 10);
                   return date;
                 })()
               });
@@ -198,7 +219,7 @@
                 inline: true,
 
                 classNames: {
-                  base: 'datepicker custom'
+                  node: 'datepicker custom'
                 },
 
                 templates: {
