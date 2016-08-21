@@ -33,7 +33,7 @@
   position: relative;
   z-index: 1;
   background: white;
-  border: 1px solid rgba(0,0,0,0.1);
+  border: 1px solid #ddd;
   width: 16rem;
 }
 
@@ -53,7 +53,7 @@
   text-align: center;
   padding: 0.25rem;
   margin: -0.5rem -0.5rem 0;
-  border-bottom: 1px solid rgba(0,0,0,0.1);
+  border-bottom: 1px solid #ddd;
 }
 
 .datepicker__title {
@@ -95,6 +95,26 @@
   pointer-events: none;
   cursor: default;
   opacity: 0.4;
+}
+
+.datepicker__time {
+  padding: 0.5rem 1rem;
+  margin: 0 -0.5rem;
+  border-bottom: 1px solid #ddd;
+  font-size: 0.75rem;
+  text-align: right;
+  background: #fafafa;
+}
+
+.datepicker__label {
+  margin-right: 1rem;
+  color: #aaa;
+  float: left;
+}
+
+.datepicker__field {
+  display: inline-block;
+  margin: 0 0.125rem;
 }
 
 .datepicker__day {

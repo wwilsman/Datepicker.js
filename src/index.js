@@ -26,6 +26,8 @@ import {
   deserializeWithinWithout,
   deserializeOpenOn,
   constrainWeekstart,
+  defaultTimeObject,
+  bindOptionFunctions,
   createTemplateRenderers
 } from './options'
 
@@ -117,36 +119,46 @@ export default class Datepicker {
   _initOptions(opts = {}) {
     this._opts = {}
 
-    // options pass through here before being set
     let inline = updateInline.bind(this)
     let minMax = deserializeMinMax.bind(this)
     let withInOut = deserializeWithinWithout.bind(this)
     let openOn = deserializeOpenOn.bind(this)
     let weekstart = constrainWeekstart.bind(this)
+    let defTime = defaultTimeObject.bind(this)
     let classNames = updateClassNames.bind(this)
+    let bindFunc = bindOptionFunctions.bind(this)
     let templates = createTemplateRenderers.bind(this)
 
-    this._setters = {
+    // options pass through here before being set
+    this._set = {
+      openOn,
       inline,
+      weekstart,
       min: minMax,
       max: minMax,
       within: withInOut,
       without: withInOut,
-      openOn,
-      weekstart,
+      defaultTime: defTime,
       classNames,
       templates
     }
 
+    // functions
+    let fns = [ 'serialize', 'deserialize', 'onInit', 'onChange', 'onRender', 'setValue', 'getValue' ]
+    fns.forEach((name) => this._set[name] = bindFunc)
+
     // setup renderers
     this._renderers = {
       select: tmpl([
-        '<span style="position:relative"><%= o[c] %>',
-          '<select data-<%= t %>="<%= c %>" data-index="<%= i %>"',
-              'style="position:absolute;top:0;left:0;width:100%;height:100%;margin:0;opacity:0.005;">',
-            '<% for (var v in o) { %>',
-              '<option value="<%= v %>"<%= (v == c) ? " selected" : "" %>><%= o[v] %></option>',
-            '<% } %>',
+        '<span style="position:relative"><%= text %>',
+          '<select data-<%= type %>="<%= value %>" data-index="<%= index %>"',
+              'style="position:absolute;top:0;left:0;width:100%;height:100%;margin:0;opacity:0.005;cursor:pointer;">',
+            '<% options.forEach(function(o) { %>',
+              '<option value="<%= o.value %>"',
+              '<%= o.selected ? " selected" : "" %>',
+              '<%= o.disabled ? " disabled" : "" %>',
+              '><%= o.text %></option>',
+            '<% }); %>',
           '</select>',
         '</span>'
       ].join(''))
@@ -336,11 +348,11 @@ export default class Datepicker {
     if (this._dragStart && closest(e.target, '[data-day]', this.node)) {
       let dates = this._highlighted.map((t) => new Date(t))
 
-      // start/end a range
-      if (ranged) {
+      // ranged or not multiple, don't toggle
+      if (ranged || !multiple) {
         this.setDate(dates)
 
-      // select normally
+      // toggle
       } else {
         this.toggleDate(dates, !this._deselect)
       }
@@ -367,30 +379,59 @@ export default class Datepicker {
    * What did you click?
    */
   _onclick(e) {
+    let el = e.target
 
     // previous month
-    if (e.target.hasAttribute('data-prev')) {
-      this.prev(e.target.dataset.prev)
+    if (el.hasAttribute('data-prev')) {
+      this.prev(el.dataset.prev)
 
     // next month
-    } else if (e.target.hasAttribute('data-next')) {
-      this.next(e.target.dataset.next)
+    } else if (el.hasAttribute('data-next')) {
+      this.next(el.dataset.next)
 
     // clicked the year select but it hasn't been bound
-    } else if (e.target.hasAttribute('data-year') && !e.target.onchange) {
-      e.target.onchange = () => {
-        let c = e.target.dataset.year
+    } else if (el.hasAttribute('data-year') && !el.onchange) {
+      el.onchange = () => {
+        let c = el.dataset.year
         let y = this._month.getFullYear()
-        this._month.setFullYear(parseInt(e.target.value) - (c - y))
+        this._month.setFullYear(parseInt(el.value) - (c - y))
         this.render()
       }
 
     // clicked the month select but it hasn't been bound
-    } else if (e.target.hasAttribute('data-month') && !e.target.onchange) {
-      e.target.onchange = () => {
-        console.log(e.target.dataset.index)
-        this._month.setMonth(e.target.value - e.target.dataset.index)
+    } else if (el.hasAttribute('data-month') && !el.onchange) {
+      el.onchange = () => {
+        this._month.setMonth(el.value - el.dataset.index)
         this.render()
+      }
+
+    // clicked the hour select but it hasn't been bound
+    } else if (el.hasAttribute('data-hour') && !el.onchange) {
+      el.onchange = () => {
+        this.setTime(el.dataset.hour, el.value)
+        el.parentNode.firstChild.textContent = el.selectedOptions[0].textContent
+      }
+
+    // clicked the minute select but it hasn't been bound
+    } else if (el.hasAttribute('data-minute') && !el.onchange) {
+      el.onchange = () => {
+        this.setTime(el.dataset.minute, null, el.value)
+        el.parentNode.firstChild.textContent = el.selectedOptions[0].textContent
+      }
+
+    // clicked the period select but it hasn't been bound
+    } else if (el.hasAttribute('data-period') && !el.onchange) {
+      el.onchange = () => {
+        let part = el.dataset.period
+        let diff = (el.value === 'am' ? -12 : 12)
+
+        $$(`[data-hour="${part}"] option`, this.wrapper).forEach((el) => {
+          el.value = parseInt(el.value) + diff
+        })
+
+        this.setTime(part, (this._time ? this._time[part][0] : 0) + diff)
+
+        el.parentNode.firstChild.textContent = el.selectedOptions[0].textContent
       }
     }
   }
@@ -403,11 +444,9 @@ export default class Datepicker {
    * @param {boolean} [noRedraw] - Do not redraw the calendar afterwards
    */
   set(key, val) {
-    let k = key
-
     if (!key) return
 
-    // set all options
+    // set multiple options
     if (isPlainObject(key)) {
 
       // don't render yet
@@ -424,45 +463,34 @@ export default class Datepicker {
       }
 
       // set remaining options
-      for (let k in key) this.set(k, key[k])
+      for (let k in key) {
+        this.set(k, key[k])
+      }
 
       // rerender
       this._noRender = false
 
-      if (this._isOpen && this.wrapper) {
-        this.render()
+      // return value
+      val = this._opts
+
+    // set individual options
+    } else {
+
+      // default opts to pass to setters
+      let opts = deepExtend({}, this.constructor.defaults, this._opts)
+
+      // fix the value
+      if (key in this._set) {
+        val = this._set[key](val, opts)
       }
 
-      // return all options
-      return this._opts
+      // actually set the value
+      if (isPlainObject(val)) {
+        val = deepExtend({}, opts[key], val)
+      }
+
+      this._opts[key] = val
     }
-
-    // setting part of an object
-    if (key.indexOf('.') > 0) {
-      let p = key.split('.')
-      let v = val
-
-      key = p.unshift()
-      val = {}
-
-      p.reduce((r, o) => val[o] = {}, val)
-      val[p[p.length - 1]] = v
-    }
-
-    // default opts to pass to setters
-    let opts = deepExtend({}, this.constructor.defaults, this._opts)
-
-    // fix the value
-    if (key in this._setters) {
-      val = this._setters[key](val, opts)
-    }
-
-    // actually set the value
-    if (isPlainObject(val)) {
-      val = deepExtend({}, opts[key], val)
-    }
-
-    this._opts[key] = val
 
     // rerender
     if (this._isOpen && this.wrapper) {
@@ -470,7 +498,7 @@ export default class Datepicker {
     }
 
     // return value
-    return this.get(k)
+    return val
   }
 
   /**
@@ -479,7 +507,23 @@ export default class Datepicker {
    * @param {string} key - Option key
    */
   get(key) {
-    return key.split('.').reduce((v, k) => v[k], this._opts)
+
+    // multiple options
+    if (arguments.length > 1) {
+      return [...arguments].reduce((o, a) => {
+        o[a] = this.get(a)
+        return o
+      }, {})
+    }
+
+    // single option
+    let val = this._opts[key]
+
+    if (isPlainObject(val)) {
+      val = deepExtend({}, val)
+    }
+
+    return val
   }
 
   /**
@@ -509,6 +553,9 @@ export default class Datepicker {
     if (!isValidDate(date)) {
       date = new Date()
     }
+
+    // set/reset time
+    this.setTime(!!this._selected.length)
 
     // set calendar to date and show it
     this.goToDate(date)
@@ -615,6 +662,10 @@ export default class Datepicker {
     if (this._isOpen) {
       this.render()
     }
+
+    if (this._opts.onNavigate) {
+      this._opts.onNavigate(date)
+    }
   }
 
   /**
@@ -652,14 +703,14 @@ export default class Datepicker {
    * @param {boolean} [force] - Force to selected/deselected
    */
   toggleDate(date, force) {
-    let { ranged, multiple, deserialize, onChange } = this._opts
+    let { ranged, multiple, deserialize } = this._opts
     let dates = [].concat(date)
 
     // deserialize
     dates = dates.map((d) => isValidDate(d) ? d : deserialize(d))
 
     // filter valid dates and set to the beginning of the day
-    dates = dates.filter((d) => isValidDate(d) && this.dateAllowed(d)).map(setToStart)
+    dates = dates.filter((d) => isValidDate(d) && this.dateAllowed(d))
 
     // create range from selected dates
     if (ranged) {
@@ -672,7 +723,7 @@ export default class Datepicker {
     }
 
     // loop over date times
-    dates.map((d) => d.getTime()).forEach((t) => {
+    dates.map((d) => setToStart(d).getTime()).forEach((t) => {
       let index = this._selected.indexOf(t)
       let hasDate = index > -1
 
@@ -693,6 +744,16 @@ export default class Datepicker {
     })
 
     // update the element
+    this._update()
+  }
+
+  /**
+   * Update the attached element and call onChange
+   */
+  _update() {
+    let { onChange } = this._opts
+
+    // update the element
     if (this._el.nodeName.toLowerCase() === 'input') {
       this._el.value = this.getValue()
     } else {
@@ -709,23 +770,43 @@ export default class Datepicker {
    * Get the selected dates
    */
   getDate() {
-    let { ranged, multiple } = this._opts
+    let { ranged, multiple, time } = this._opts
+    let start = this._time ? this._time.start : [0, 0]
 
     this._selected = (this._selected || []).sort()
 
+    // return an array
     if (multiple || ranged) {
-      return this._selected.map((t) => new Date(t))
+
+      // to dates
+      let sel = this._selected.map((t) => new Date(t))
+
+      // set time
+      if (time && sel.length) {
+        sel[0].setHours(start[0], start[1])
+
+        if (sel.length > 1) {
+          let end = this._time ? this._time.end : [0, 0]
+          sel[sel.length - 1].setHours(end[0], end[1])
+        }
+      }
+
+      // return
+      return sel
     }
 
+    // correct time and return date
     if (this._selected.length) {
-      return new Date(this._selected[0])
+      let d = new Date(this._selected[0])
+      d.setHours(start[0], start[1])
+      return d
     }
   }
 
   /**
    * Set the date
    *
-   * @param {Date} date [description]
+   * @param {Date} date - Date(s) to set the time to
    */
   setDate(date) {
     this._selected = []
@@ -733,17 +814,69 @@ export default class Datepicker {
   }
 
   /**
+   * Set the start/end time or part of it
+   *
+   * @param {string}  part   (optional) "start" or "end"
+   * @param {integer} hour   Value between 0 and 23 representing the hour
+   * @param {integer} minute Value between 0 and 59 representing the minute
+   */
+  setTime(part, hour, minute) {
+    let { time, defaultTime } = this._opts
+
+    if (!time) return
+
+    if (part === true || !this._time) {
+      this._time = deepExtend({}, defaultTime)
+    }
+
+    // set time
+    if (part && part !== true) {
+
+      // default set start
+      if (typeof part === 'number') {
+        minute = hour
+        hour = part
+        part = 'start'
+      }
+
+      // correct params
+      part = part === 'end' ? part : 'start'
+      hour = hour ? parseInt(hour, 10) : false
+      minute = minute ? parseInt(minute, 10) : false
+
+      // set hours
+      if (hour && !isNaN(hour)) {
+        this._time[part][0] = hour
+      }
+
+      // set minutes
+      if (minute && !isNaN(minute)) {
+        this._time[part][1] = minute
+      }
+    }
+
+    // update the element
+    this._update()
+  }
+
+  /**
    * Get the value
    */
   getValue() {
-    let { ranged, separator, serialize } = this._opts
+    let { ranged, separator, serialize, toValue } = this._opts
     let selected = [].concat(this.getDate() || [])
 
     if (ranged && selected.length > 1) {
       selected = [selected[0], selected.pop()]
     }
 
-    return selected.map(serialize).join(separator)
+    let value = selected.map(serialize).join(separator)
+
+    if (toValue) {
+      value = toValue(value, selected)
+    }
+
+    return value
   }
 
   /**
@@ -752,8 +885,25 @@ export default class Datepicker {
    * @param {string} value - The date value
    */
   setValue(val) {
+    let { ranged, time, separator, serialize, fromValue } = this._opts
     this._selected = []
-    this.addDate(val.split(this._opts.separator))
+
+    let dates = fromValue ? fromValue(val) :
+      val.split(separator).filter(Boolean).map(serialize)
+
+    // set dates
+    this.addDate(dates)
+
+    // set time
+    if (time && dates.length) {
+      let start = dates.sort(compareDates)[0]
+      this.setTime('start', start.getHours(), start.getMinutes())
+
+      if (time === 'ranged' || ranged) {
+        let end = dates[dates.length - 1]
+        this.setTime('end', end.getHours(), end.getMinutes())
+      }
+    }
   }
 
   /**
@@ -788,7 +938,7 @@ export default class Datepicker {
    * render the calendar HTML
    */
   render() {
-    let { yearRange, i18n, onRender } = this._opts
+    let { ranged, time, onRender } = this._opts
 
     // don't render
     if (this._noRender || !this._renderers) return
@@ -797,53 +947,11 @@ export default class Datepicker {
     let renderCache = {}
     let getData = (i) => renderCache[i] || (renderCache[i] = this.getData(i))
 
-    // generic render header
-    let renderHeader = (data) => {
-      let { _date, index, year } = data
-
-      return this._renderers.header({ ...data,
-
-        // render month select
-        renderMonthSelect: (i = index) => {
-          let d = new Date(_date.getTime())
-          let o = {}
-
-          for (let m = 0; m < 12; m++) {
-            if (this.dateAllowed(d.setMonth(m), 'month')) {
-              o[m] = i18n.months[m]
-            }
-          }
-
-          return this._renderers.select({
-            o, i, t: 'month', c: _date.getMonth()
-          })
-        },
-
-        // render year select
-        renderYearSelect: (i = index) => {
-          let d = new Date(_date.getTime())
-          let y = year - yearRange
-          let max = year + yearRange
-          let o = {}
-
-          for (; y <= max; y++) {
-            if (this.dateAllowed(d.setFullYear(y), 'year')) {
-              o[y] = y
-            }
-          }
-
-          return this._renderers.select({
-            o, i, t: 'year', c: year
-          })
-        }
-      })
-    }
-
     // render html
     this.wrapper.innerHTML = this._renderers.container({
 
       // render header
-      renderHeader: (i = 0) => renderHeader(getData(i)),
+      renderHeader: (i = 0) => this._renderHeader(getData(i)),
 
       // render calendar
       renderCalendar: (i = 0) => {
@@ -852,16 +960,33 @@ export default class Datepicker {
         return this._renderers.calendar({ ...data,
 
           // render header within calendar
-          renderHeader: () => renderHeader(data),
+          renderHeader: () => this._renderHeader(data),
 
           // render day
           renderDay: (day) => this._renderers.day(day)
         })
+      },
+
+      // render timepicker
+      renderTimepicker: () => {
+        let html = ''
+
+        if (time) {
+          html = this._renderTimepicker('start')
+
+          if (time === 'ranged' || ranged) {
+            html += this._renderTimepicker('end')
+          }
+        }
+
+        return html
       }
     })
 
     // callback
-    if (onRender) onRender(this.wrapper.firstChild)
+    if (onRender) {
+      onRender(this.wrapper.firstChild)
+    }
   }
 
   /**
@@ -972,5 +1097,167 @@ export default class Datepicker {
       hasNext: (!dateMax || nextMonth <= dateMax),
       hasPrev: (!dateMin || prevMonth >= dateMin)
     }
+  }
+
+  /**
+   * Generic render header
+   */
+  _renderHeader(data) {
+    let { yearRange, i18n } = this._opts
+    let { _date, index, year } = data
+    let month = _date.getMonth()
+
+    return this._renderers.header({ ...data,
+
+      // render month select
+      renderMonthSelect: (i = index) => {
+        let d = new Date(_date.getTime())
+        let options = []
+
+        for (let m = 0; m < 12; m++) {
+          d.setMonth(m)
+
+          options.push({
+            text: i18n.months[m],
+            disabled: !this.dateAllowed(d, 'month'),
+            selected: m === month,
+            value: m
+          })
+        }
+
+        return this._renderers.select({
+          index: i,
+          type: 'month',
+          text: i18n.months[month],
+          value: month,
+          options
+        })
+      },
+
+      // render year select
+      renderYearSelect: (i = index) => {
+        let d = new Date(_date.getTime())
+        let y = year - yearRange
+        let max = year + yearRange
+        let options = []
+
+        for (; y <= max; y++) {
+          d.setFullYear(y)
+
+          options.push({
+            disabled: !this.dateAllowed(d, 'year'),
+            selected: y === year,
+            value: y,
+            text: y
+          })
+        }
+
+        return this._renderers.select({
+          index: i,
+          type: 'year',
+          text: year,
+          value: year,
+          options
+        })
+      }
+    })
+  }
+
+  /**
+   * Individual timepicker render
+   */
+  _renderTimepicker(name) {
+    let { ranged, time: timepicker, i18n } = this._opts
+
+    if (!timepicker) return
+
+    if (!this._time) {
+      this.setTime(true)
+    }
+
+    let time = this._time[name]
+    let label = i18n.time[0]
+
+    if (timepicker === 'ranged' || ranged) {
+      label = i18n.time[name === 'start' ? 1 : 2]
+    }
+
+    return this._renderers.timepicker({
+      label,
+
+      renderHourSelect: (long = false) => {
+        let options = []
+
+        let hour = time[0]
+        let end = long ? 24 : 12
+
+        for (let h = 0; h < end; h++) {
+          options.push({
+            text: (long || h) ? h : '12',
+            selected: hour === h,
+            disabled: false,
+            value: h
+          })
+        }
+
+        if (!long && hour >= 12) {
+          options.forEach((o) => o.selected = (o.value += 12) === hour)
+        } else if (!long) {
+          options.push(options.shift())
+        }
+
+        let text = options.filter((o) => o.selected)[0].text
+
+        return this._renderers.select({
+          index: 0,
+          type: 'hour',
+          value: name,
+          options,
+          text
+        })
+      },
+
+      renderMinuteSelect: (incr = 15) => {
+        let options = []
+
+        for (let i = 0; i < 60; i += incr) {
+          options.push({
+            text: i < 10 ? '0' + i : i,
+            selected: time[1] === i,
+            disabled: false,
+            value: i
+          })
+        }
+
+        let text = options.filter((o) => o.selected)[0].text
+
+        return this._renderers.select({
+          index: null,
+          type: 'minute',
+          value: name,
+          options,
+          text
+        })
+      },
+
+      renderPeriodSelect: () => {
+        return this._renderers.select({
+          index: null,
+          type: 'period',
+          text: time[0] >= 12 ? 'PM' : 'AM',
+          value: name,
+
+          options: [{
+            text: 'AM',
+            value: 'am',
+            selected: time[0] < 12
+          }, {
+            text: 'PM',
+            value: 'pm',
+            selected: time[0] >= 12
+          }]
+        })
+      }
+    })
   }
 }

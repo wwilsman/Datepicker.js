@@ -95,13 +95,34 @@
 
       <div class="example">
         <div class="example__desc">
-          <h3>Inline &amp; Constraints</h3>
+          <h3>Ranged &amp; Time Picker</h3>
+          <p>Set to inline on hidden inputs.</p>
+        </div>
+        <div class="tabs" data-prefix="ranged">
+          <div class="tabs__wrapper">
+            <div class="tabs__content" id="ranged-html"><pre class="language-html"><code>
+              <input type="hidden" id="ranged">
+            </code></pre></div>
+            <div class="tabs__content" id="ranged-js"><pre class="language-javascript"><code>
+              var ranged = new Datepicker('#ranged', {
+                inline: true,
+                ranged: true,
+                time: true
+              });
+            </code></pre></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="example">
+        <div class="example__desc">
+          <h3>Data Attributes &amp; Constraints</h3>
           <p>Data attributes override options.</p>
         </div>
         <div class="tabs" data-prefix="constrained">
           <div class="tabs__wrapper">
             <div class="tabs__content" id="constrained-html"><pre class="language-html"><code>
-              <input type="hidden" id="constrained" data-inline="true" data-ranged="true" data-open-on="today">
+              <input type="hidden" id="constrained" data-inline="true" data-multiple="true" data-open-on="today">
               <!-- data-without="[2/13/2016,2/14/2016,2/17/2016]" -->
             </code></pre></div>
             <div class="tabs__content" id="constrained-js"><pre class="language-javascript"><code>
@@ -198,7 +219,7 @@
                 inline: true,
 
                 classNames: {
-                  base: 'datepicker custom'
+                  node: 'datepicker custom'
                 },
 
                 templates: {

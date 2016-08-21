@@ -1,6 +1,8 @@
 import {
   toggleClass,
   isValidDate,
+  isPlainObject,
+  deepExtend,
   setToStart,
   transform,
   tmpl
@@ -23,7 +25,7 @@ export function updateInline(isInline, opts) {
 // update classNames
 export function updateClassNames(classNames, opts) {
   let {
-    base: baseClass,
+    node: nodeClass,
     inline: inlineClass,
     wrapper: wrapperClass
   } = classNames
@@ -33,9 +35,9 @@ export function updateClassNames(classNames, opts) {
   if (this.node) {
     for (let key in classNames) {
       switch (key) {
-        case 'base':
+        case 'node':
         case 'inline':
-          this.node.className = baseClass + (isInline ? ` ${inlineClass}` : '')
+          this.node.className = nodeClass + (isInline ? ` ${inlineClass}` : '')
           break
 
         case 'wrapper':
@@ -96,6 +98,15 @@ export function deserializeOpenOn(openOn, opts) {
 // constrain weekstart
 export function constrainWeekstart(weekstart) {
   return Math.min(Math.max(weekstart, 0), 6)
+}
+
+// defaultTime is an object
+export function defaultTimeObject(time, opts) {
+  if (isPlainObject(time)) {
+    return deepExtend({}, time, opts.defaultTime)
+  }
+
+  return { start: time.slice(0), end: time.slice(0) }
 }
 
 // bind option functions

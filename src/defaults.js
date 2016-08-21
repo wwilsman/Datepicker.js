@@ -4,6 +4,7 @@ export default {
   inline: false,
   multiple: false,
   ranged: false,
+  time: false,
 
   min: false,
   max: false,
@@ -12,28 +13,44 @@ export default {
   yearRange: 5,
   weekStart: 0,
 
+  defaultTime: {
+    start: [0, 0],
+    end: [12, 0]
+  },
+
   separator: ',',
 
   serialize(date) {
-    return date.toLocaleDateString()
+    let dateStr = date.toLocaleDateString()
+
+    if (this.get('time')) {
+      let timeStr = date.toLocaleTimeString()
+      timeStr = timeStr.replace(/(\d{1,2}:\d{2}):00/, '$1')
+      return `${dateStr}@${timeStr}`
+    }
+
+    return dateStr
   },
 
   deserialize(str) {
     return new Date(str)
   },
 
+  toValue: false,
+  fromValue: false,
+
   onInit: false,
   onChange: false,
   onRender: false,
-  onNavigate: false,
 
   i18n: {
     months: ['January','February','March','April','May','June','July','August','September','October','November','December'],
-    weekdays: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
+    weekdays: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
+    time: ['Time', 'Start', 'End']
   },
 
   classNames: {
-    base: 'datepicker',
+    node: 'datepicker',
     wrapper: 'datepicker__wrapper',
     inline: 'is-inline',
     selected: 'is-selected',
@@ -45,9 +62,11 @@ export default {
   },
 
   templates: {
+
     container: [
       '<div class="datepicker__container">',
         '<%= renderHeader() %>',
+        '<%= renderTimepicker() %>',
         '<%= renderCalendar() %>',
       '</div>'
     ].join(''),
@@ -55,10 +74,19 @@ export default {
     header: [
       '<header class="datepicker__header">',
         '<a class="datepicker__prev<%= (hasPrev) ? "" : " is-disabled" %>" data-prev>&lsaquo;</a>',
-        '<span class="datepicker__title" data-title><%= renderMonthSelect() %></span>',
-        '<span class="datepicker__title" data-title><%= renderYearSelect() %></span>',
+        '<span class="datepicker__title"><%= renderMonthSelect() %></span>',
+        '<span class="datepicker__title"><%= renderYearSelect() %></span>',
         '<a class="datepicker__next<%= (hasNext) ? "" : " is-disabled" %>" data-next>&rsaquo;</a>',
       '</header>'
+    ].join(''),
+
+    timepicker: [
+      '<div class="datepicker__time">',
+        '<span class="datepicker__label"><%= label %></span>',
+        '<span class="datepicker__field"><%= renderHourSelect() %></span>:',
+        '<span class="datepicker__field"><%= renderMinuteSelect() %></span>',
+        '<span class="datepicker__field"><%= renderPeriodSelect() %></span>',
+      '</div>'
     ].join(''),
 
     calendar: [
