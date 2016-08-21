@@ -1,4 +1,4 @@
-# Datepicker.js [![Build Status](https://travis-ci.org/wwilsman/Datepicker.js.svg?branch=master)](https://travis-ci.org/wwilsman/datepicker)
+# Datepicker.js [![Build Status](https://travis-ci.org/wwilsman/Datepicker.js.svg?branch=master)](https://travis-ci.org/wwilsman/Datepicker.js)
 
 This README is a work in progress.
 

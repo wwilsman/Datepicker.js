@@ -26,9 +26,9 @@ describe('Datepicker', function() {
     });
 
     it('should extend deep objects', function() {
-      datepicker.set('classNames', { base: 'dk' });
+      datepicker.set('classNames', { node: 'dk' });
 
-      expect(datepicker.get('classNames.base')).toBe('dk');
+      expect(datepicker.get('classNames').node).toBe('dk');
     });
   });
 
