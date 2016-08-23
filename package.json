@@ -1,6 +1,6 @@
 {
   "name": "Datepicker.js",
-  "version": "0.0.1-beta2",
+  "version": "0.1.0-beta",
   "description": "A pure JS datepicker",
   "main": "dist/datepicker.js",
   "repository": {

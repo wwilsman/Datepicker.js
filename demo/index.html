@@ -32,19 +32,20 @@
       <p>Include the files</p>
       <pre class="language-html"><code>
         ...
-        &lt;link rel="stylesheet" href="datepicker.css"&gt;
+        &lt;!-- or another theme from `dist/css` --&gt;
+        &lt;link rel="stylesheet" href="datepicker.material.css"&gt;
         &lt;script src="datepicker.js"&gt;&lt;/script&gt;
         ...
       </code></pre>
 
       <p>Distinguish the Datepickers</p>
       <pre class="language-html"><code>
-        &lt;input type="text" class="datepicker"&gt;
+        &lt;input type="text" id="datepicker"&gt;
       </code></pre>
 
       <p>Initialize Datepicker.js</p>
       <pre class="language-js"><code>
-        new Datepicker('.datepicker');
+        var datepicker = new Datepicker('#datepicker');
       </code></pre>
     </div>
   </section>
@@ -122,7 +123,7 @@
         <div class="tabs" data-prefix="constrained">
           <div class="tabs__wrapper">
             <div class="tabs__content" id="constrained-html"><pre class="language-html"><code>
-              <input type="hidden" id="constrained" data-inline="true" data-multiple="true" data-open-on="today">
+              <input type="hidden" id="constrained" data-inline="true" data-multiple="true" data-open-on="today" data-time="true">
               <!-- data-without="[2/13/2016,2/14/2016,2/17/2016]" -->
             </code></pre></div>
             <div class="tabs__content" id="constrained-js"><pre class="language-javascript"><code>
@@ -249,67 +250,67 @@
       </div>
 
       <dl>
-        <dt id="option-class"><strong>class:</strong> <code>""</code> <em>{String}</em></dt>
-        <dd>Additional classes for theming</dd>
+        <dt id="option-inline"><strong>inline:</strong> <code>true|false</code></dt>
+        <dd>Best used with hidden inputs. Enabling this will render the Datepicker inline with the input and prevent show/hide functionality.</dd>
 
-        <dt id="option-open-on"><strong>openOn:</strong> <code>"start"</code> <em>{(String|Date)}</em></dt>
-        <dd>Open the Datepicker to 'first' or 'last' date in selection, or a specific date</dd>
+        <dt id="option-multiple"><strong>multiple:</strong> <code>true|false</code></dt>
+        <dd>Enables the ability for multiple dates to be selected. Clicking and dragging selects/deselects a range of dates.</dd>
 
-        <dt id="option-multiple"><strong>multiple:</strong> <code>false</code> <em>{Boolean}</em></dt>
-        <dd>Allow multiple dates to be selected</dd>
+        <dt id="option-ranged"><strong>ranged:</strong> <code>true|false</code></dt>
+        <dd>Forces the selection to a range of dates. Subsequent clicks and dragging select a new&nbsp;range.</dd>
 
-        <dt id="option-inline"><strong>inline:</strong> <code>false</code> <em>{Boolean}</em></dt>
-        <dd>Supress <code>#.show()</code> &amp; <code>#.hide()</code> functionality</dd>
+        <dt id="option-time"><strong>time:</strong> <code>true|false|"ranged"</code></dt>
+        <dd>Enables a single time picker for non-ranged Datepickers when `true`. For ranged Datepickers, or when `time` is `"ranged"`, two time pickers are rendered: "start" and&nbsp;"end".</dd>
 
-        <dt id="option-min"><strong>min:</strong> <code>false</code> <em>{(String|Date)}</em></dt>
-        <dd>Minimum date allowed</dd>
+        <dt id="option-open-on"><strong>openOn:</strong> <code>Date|"first"|"last"|"today"</code></dt>
+        <dd>Default place the Datepicker will open to. A specified date, today, or the first/last date within the selected dates. Default `"first"`.</dd>
 
-        <dt id="option-max"><strong>max:</strong> <code>false</code> <em>{(String|Date)}</em></dt>
-        <dd>Maximum date allowed</dd>
+        <dt id="option-min-max"><strong>min</strong>/<strong>max:</strong> <code>Date|false</code></dt>
+        <dd>Minimum and maximum dates available to select from. Default `false`.</dd>
 
-        <dt id="option-within"><strong>within:</strong> <code>false</code> <em>{(String[]|Date[])}</em></dt>
-        <dd>Only allow dates within this array</dd>
+        <dt id="option-within"><strong>within:</strong> <code>[Date...]|false</code></dt>
+        <dd>If provided, only dates within this array will be allowed. Default `false`.</dd>
 
-        <dt id="option-without"><strong>without:</strong> <code>false</code> <em>{(String[]|Date[])}</em></dt>
-        <dd>Disallow dates within this array</dd>
+        <dt id="option-without"><strong>without:</strong> <code>[Date...]|false</code></dt>
+        <dd>If provided, dates within this array will be excluded. Default `false`.</dd>
 
-        <dt id="option-year-range"><strong>yearRange:</strong> <code>5</code> <em>{Integer}</em></dt>
-        <dd>Range of year picker</dd>
+        <dt id="option-year-range"><strong>yearRange:</strong> <code>Integer</code></dt>
+        <dd>How many years forward &amp; backward from the active year the Datepicker will display in the year dropdown menu. Default `5`.</dd>
 
-        <dt id="option-week-start"><strong>weekStart:</strong> <code>0</code> <em>{Integer}</em></dt>
-        <dd>Day to start week on; 0 = Sunday, 1 = Monday, etc...</dd>
+        <dt id="option-week-start"><strong>weekStart:</strong> <code>Integer</code></dt>
+        <dd>Index of the day of the week to start on, `0-6`. `0 == Sunday`, `1 == Monday`, etc. Default `0`.</dd>
 
-        <dt id="option-calendars"><strong>calendars:</strong> <code>1</code> <em>{Integer}</em></dt>
-        <dd>Number of calendars to draw</dd>
+        <dt id="option-default-time"><strong>defaultTime:</strong> <code>Object|Array</code></dt>
+        <dd>Default time when the `time` option is enabled. Given an array of `[hours, minutes]`, will set both the start and end default times. An object consisting of `start` and `end` arrays will set them individually. Default `{ start: [0, 0], end: [12, 0] }`.</dd>
 
-        <dt id="option-paginate"><strong>paginate:</strong> <code>1</code> <em>{Integer}</em></dt>
-        <dd>How many months to skip when using next/prev (useful for multiple calendars)</dd>
+        <dt id="option-separator"><strong>separator:</strong> <code>String</code></dt>
+        <dd>The separator used when serializing multiple dates. Default `","`.</dd>
 
-        <dt id="option-index"><strong>index:</strong> <code>0</code> <em>{Integer}</em></dt>
-        <dd>Index of main calendar when using multiple calendars</dd>
+        <dt id="option-serialize"><strong>serialize:</strong> <code>(Date) => String</code></dt>
+        <dd>Transforms a date into a string to be set as the value of the input.</dd>
 
-        <dt id="option-separator"><strong>separator:</strong> <code>","</code> <em>{String}</em></dt>
-        <dd>Separator between values when <code>multiple</code> is true</dd>
+        <dt id="option-deserialize"><strong>deserialize:</strong> <code>(String) => Date</code></dt>
+        <dd>Parses a string into a date. Called whenever a date string is used instead of a date object.</dd>
 
-        <dt id="option-separator"><strong>responsive:</strong> <code>{}</code> <em>{Object}</em></dt>
-        <dd>Use a media query as the key and an options object as the value (see examples).</dd>
+        <dt id="option-to-value"><strong>toValue:</strong> <em>([Date...]) => String</em></dt>
+        <dd>Transforms the current selected dates to a string used to set the value of the input element.</dd>
 
-        <dt id="option-serialize"><strong>serialize(<em>{Date}</em>):</strong> <em>{Callback}</em></dt>
-        <dd>Callback to transform a Date into a String</dd>
+        <dt id="option-from-value"><strong>fromValue:</strong> <em>(String) => [Date...]</em></dt>
+        <dd>Parses the value of the input into an array of selected dates.</dd>
 
-        <dt id="option-deserialize"><strong>deserialze(<em>{String}</em>):</strong> <em>{Callback}</em></dt>
-        <dd>Callback to transform a String into a Date</dd>
+        <dt id="option-on-init"><strong>onInit:</strong> <em>(Element)</em></dt>
+        <dd>Called after initialization with the original input element as the only parameter.</dd>
 
-        <dt id="option-on-init"><strong>onInit(<em>{Element}</em>):</strong> <em>{Callback}</em></dt>
-        <dd>Called on initialization</dd>
+        <dt id="option-on-change"><strong>onChange:</strong> <em>(Date|[Date...])</em></dt>
+        <dd>Called whenever the selected dates change or when the time or time range is updated. The currently selected date(s) are passed; start and end times are set on the respective start and end dates.</dd>
 
-        <dt id="option-on-update"><strong>onUpdate(<em>{(Date|Date[])}</em>):</strong> <em>{Callback}</em></dt>
-        <dd>Called when datepicker is updated</dd>
+        <dt id="option-on-render"><strong>onRender:</strong> <em>(Element)</em></dt>
+        <dd>Called whenever the Datepicker is rendered. The element passed is the first child from the resulting templates.</dd>
       </dl>
     </div>
   </section>
 
-  <section class="section" id="methods">
+ <!--  <section class="section" id="methods">
     <div class="container">
       <div class="section__header">
         <h2>Methods</h2>
@@ -391,7 +392,11 @@
         <dd>Basic `toString` method</dd>
       </dl>
     </div>
-  </section>
+  </section> -->
+
+  <footer class="footer">
+    <p>Copyright &copy; 2016 <a href="http://wilwilsman.com/" target="_blank">Wil Wilsman</a>. MIT License.</p>
+  </footer>
 
   <a href="https://github.com/wwilsman/Datepicker.js" class="github-corner"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
 
