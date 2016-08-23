@@ -1,11 +1,18 @@
 // Our default options
 export default {
-  openOn: 'first',
+
+  /**
+   * Basic options
+   */
   inline: false,
   multiple: false,
   ranged: false,
   time: false,
 
+  /**
+   * Additional options
+   */
+  openOn: 'first',
   min: false,
   max: false,
   within: false,
@@ -36,19 +43,27 @@ export default {
     return new Date(str)
   },
 
+  /**
+   * Callbacks
+   */
   toValue: false,
   fromValue: false,
-
   onInit: false,
   onChange: false,
   onRender: false,
 
+  /**
+   * Localizations
+   */
   i18n: {
     months: ['January','February','March','April','May','June','July','August','September','October','November','December'],
     weekdays: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
     time: ['Time', 'Start', 'End']
   },
 
+  /**
+   * ClassNames to be used by the Datepicker
+   */
   classNames: {
     node: 'datepicker',
     wrapper: 'datepicker__wrapper',
@@ -61,8 +76,16 @@ export default {
     today: 'is-today'
   },
 
+  /**
+   * See below for available properties within each context
+   */
   templates: {
 
+    /**
+     * renderHeader([index])
+     * renderTimepicker()
+     * renderCalendar([index])
+     */
     container: [
       '<div class="datepicker__container">',
         '<%= renderHeader() %>',
@@ -71,6 +94,9 @@ export default {
       '</div>'
     ].join(''),
 
+    /**
+     * @see `calendar`
+     */
     header: [
       '<header class="datepicker__header">',
         '<a class="datepicker__prev<%= (hasPrev) ? "" : " is-disabled" %>" data-prev>&lsaquo;</a>',
@@ -80,6 +106,12 @@ export default {
       '</header>'
     ].join(''),
 
+    /**
+     * label - i18n option for `time`
+     * renderHourSelect([24hour])
+     * renderMinuteSelect()
+     * renderPeriodSelect()
+     */
     timepicker: [
       '<div class="datepicker__time">',
         '<span class="datepicker__label"><%= label %></span>',
@@ -89,6 +121,15 @@ export default {
       '</div>'
     ].join(''),
 
+    /**
+      * index - calendar index
+      * year - current year
+      * month - current month
+      * days - @see `day`
+      * weekdays - i18n weekdays
+      * hasNext - next month is available
+      * hasPrev: prev month is available
+     */
     calendar: [
       '<table class="datepicker__cal">',
         '<thead>',
@@ -108,6 +149,20 @@ export default {
       '</table>',
     ].join(''),
 
+    /**
+      * date - the serialized date
+      * daynum - the day of the month
+      * timestamp - date timestamp
+      * weekday - i18n weekday
+      * isSelected - day is selected
+      * isDisabled - day is unavailable
+      * isPrevMonth - day is at the end of the previous month
+      * isNextMonth - day is at the begining of the next month
+      * isThisMonth - day is neither of the above
+      * isWeekend - day is a weekend
+      * isToday - day is today
+      * classNames - relevant `classNames`
+     */
     day: [
       '<% classNames.push("datepicker__day"); %>',
       '<td class="<%= classNames.join(" ") %>" data-day="<%= timestamp %>"><div>',

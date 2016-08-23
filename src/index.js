@@ -46,26 +46,6 @@ export default class Datepicker {
    *
    * @param {(string|HTMLElement)} elem - DOM element to attach to
    * @param {Object} [opts] - Instance configuration
-   *
-   * @param {string} [opts.class=''] - Additional classes for theming
-   * @param {(string|Date)} [opts.openOn='start'] - Open the datepicker to 'first' or 'last' date in selection, or a specific Date
-   * @param {boolean} [opts.multiple=false] - Allow multiple dates to be selected
-   * @param {boolean} [opts.inline=false] - Supress show & hide functionality
-   * @param {(string|Date)} [opts.min=false] - Minimum date allowed
-   * @param {(string|Date)} [opts.max=false] - Maximum date allowed
-   * @param {(string[]|Date[])} [opts.within=false] - Only allow dates within this array
-   * @param {(string[]|Date[])} [opts.without=false] - Disallow dates within this array
-   * @param {integer} [opts.yearRange=5] - Range of year picker
-   * @param {integer} [opts.weekStart=0] - Day to start week on; 0 = Sunday, 1 = Monday, etc...
-   * @param {integer} [opts.calendars=1] - Number of calendars to draw
-   * @param {integer} [opts.paginate=1] - How many months to skip when using next/prev (useful for multiple calendars)
-   * @param {integer} [opts.index=0] - Index of main calendar when using multiple calendars
-   * @param {string} [opts.separator=','] - Separator between values when `multple` is true
-
-   * @param {callback} [opts.serialize(date)] - Callback to transform Date to string value
-   * @param {callback} [opts.deserialize(str)] - Callback to transform string into Date object
-   * @param {callback} [opts.onInit(elem)] - Called on initialization
-   * @param {callback} [opts.onUpdate(value)] - Called when datepicker is updated
    */
   constructor(elem, opts) {
 
@@ -174,6 +154,8 @@ export default class Datepicker {
 
   /**
    * Initialize DOM
+   *
+   * @param {Element} elem The element to wrap
    */
   _initDOM(elem) {
 
@@ -439,9 +421,8 @@ export default class Datepicker {
   /**
    * Set options
    *
-   * @param {(string|Object)} prop - Option key, or object of properties
-   * @param {mixed} [value] - Value of option (not used if object present)
-   * @param {boolean} [noRedraw] - Do not redraw the calendar afterwards
+   * @param {String|Object} key Option key, or object of properties
+   * @param {Mixed} [val] Value of option (not used if object present)
    */
   set(key, val) {
     if (!key) return
@@ -504,7 +485,8 @@ export default class Datepicker {
   /**
    * Get an option
    *
-   * @param {string} key - Option key
+   * @param {String} key Option key
+   * @return {Mixed} Option value
    */
   get(key) {
 
@@ -529,7 +511,7 @@ export default class Datepicker {
   /**
    * Open the calendar to a specific date (or `openOn` date);
    *
-   * @param {string|Date} [date=openOn] - The date to open to
+   * @param {String|Date} [date=openOn] The date to open to
    */
   open(date) {
     let selected = [].concat(this.getDate())
@@ -626,7 +608,7 @@ export default class Datepicker {
   /**
    * Go to the next month
    *
-   * @param {integer} [skip] - How many months to skip
+   * @param {Integer} [skip] How many months to skip
    */
   next(skip) {
     let date = new Date(this._month.getTime())
@@ -639,7 +621,7 @@ export default class Datepicker {
   /**
    * Go to the previous month
    *
-   * @param {integer} [skip] - How many months to skip
+   * @param {Integer} [skip] How many months to skip
    */
   prev(skip) {
     let date = new Date(this._month.getTime())
@@ -651,7 +633,7 @@ export default class Datepicker {
   /**
    * Go to a specific date
    *
-   * @param {(string|Date)} date - Date to set the calendar to
+   * @param {Date} date Date to set the calendar to
    */
   goToDate(date) {
     date = setToStart(this._opts.deserialize(date))
@@ -671,7 +653,8 @@ export default class Datepicker {
   /**
    * Check the value for a specific date
    *
-   * @param {(string|Date)} date - The date to check for
+   * @param {Date} date The date to check for
+   * @return {Boolean} Whether the date is selected
    */
   hasDate(date) {
     date = setToStart(isValidDate(date) ? date : this._opts.deserialize(date))
@@ -681,7 +664,7 @@ export default class Datepicker {
   /**
    * Add a date to the value
    *
-   * @param {(string|Date)} date - The date to add
+   * @param {Date|Array} date The date(s) to add
    */
   addDate(date) {
     this.toggleDate(date, true)
@@ -690,7 +673,7 @@ export default class Datepicker {
   /**
    * Remove a date from the value
    *
-   * @param {(string|Date)} date - The date to remove
+   * @param {Date|Array} date The date(s) to remove
    */
   removeDate(date) {
     this.toggleDate(date, false)
@@ -699,8 +682,8 @@ export default class Datepicker {
   /**
    * Toggle a date selection
    *
-   * @param {(string|Date)} date - Date to toggle
-   * @param {boolean} [force] - Force to selected/deselected
+   * @param {Date|Array} date Date(s) to toggle
+   * @param {Boolean} [force] Force to selected/deselected
    */
   toggleDate(date, force) {
     let { ranged, multiple, deserialize } = this._opts
@@ -767,7 +750,9 @@ export default class Datepicker {
   }
 
   /**
-   * Get the selected dates
+   * Get the selected date(s)
+   *
+   * @return {Date|Array}
    */
   getDate() {
     let { ranged, multiple, time } = this._opts
@@ -806,7 +791,7 @@ export default class Datepicker {
   /**
    * Set the date
    *
-   * @param {Date} date - Date(s) to set the time to
+   * @param {Date|Array} date Date(s) to set the time to
    */
   setDate(date) {
     this._selected = []
@@ -816,9 +801,9 @@ export default class Datepicker {
   /**
    * Set the start/end time or part of it
    *
-   * @param {string}  part   (optional) "start" or "end"
-   * @param {integer} hour   Value between 0 and 23 representing the hour
-   * @param {integer} minute Value between 0 and 59 representing the minute
+   * @param {String} [part] "start" or "end"
+   * @param {Integer} hour Value between 0 and 23 representing the hour
+   * @param {Integer} minute Value between 0 and 59 representing the minute
    */
   setTime(part, hour, minute) {
     let { time, defaultTime } = this._opts
@@ -861,6 +846,8 @@ export default class Datepicker {
 
   /**
    * Get the value
+   *
+   * @return {String} The string value
    */
   getValue() {
     let { ranged, separator, serialize, toValue } = this._opts
@@ -882,7 +869,7 @@ export default class Datepicker {
   /**
    * Set the value to a specific date
    *
-   * @param {string} value - The date value
+   * @param {String} value The string value
    */
   setValue(val) {
     let { ranged, time, separator, serialize, fromValue } = this._opts
@@ -909,8 +896,9 @@ export default class Datepicker {
   /**
    * Check if a date is allowed in the datepicker
    *
-   * @param {(string|Date)} date - The date to check
-   * @param {string} [dim] - The dimension to check ('year' or 'month')
+   * @param {Date} date The date to check
+   * @param {String} [dim] The dimension to check ('year' or 'month')
+   * @return {Boolean} Whether the date is allowed or not
    */
   dateAllowed(date, dim) {
     let { min, max, within, without, deserialize } = this._opts
@@ -935,7 +923,7 @@ export default class Datepicker {
   }
 
   /**
-   * render the calendar HTML
+   * Render the calendar HTML
    */
   render() {
     let { ranged, time, onRender } = this._opts
@@ -992,7 +980,8 @@ export default class Datepicker {
   /**
    * Get an object containing data for a calendar month
    *
-   * @param {integer} [i=0] - Offset month to render
+   * @param {Integer} [index=0] Offset month to render
+   * @return {Object} Object containing data for the calendar month
    */
   getData(index = 0) {
     let {
@@ -1069,7 +1058,6 @@ export default class Datepicker {
         daynum: day.getDate(),
         timestamp: day.getTime(),
         weekday: i18n.weekdays[weekday],
-        weekdayShort: i18n.weekdays[weekday],
 
         isSelected,
         isDisabled,
@@ -1093,7 +1081,6 @@ export default class Datepicker {
       days,
 
       weekdays: i18n.weekdays,
-      weekdays: i18n.weekdays,
       hasNext: (!dateMax || nextMonth <= dateMax),
       hasPrev: (!dateMin || prevMonth >= dateMin)
     }
@@ -1101,6 +1088,9 @@ export default class Datepicker {
 
   /**
    * Generic render header
+   *
+   * @param {Object} data Data from `this.getData()`
+   * @return {String} HTML for the calendar header
    */
   _renderHeader(data) {
     let { yearRange, i18n } = this._opts
@@ -1165,6 +1155,8 @@ export default class Datepicker {
 
   /**
    * Individual timepicker render
+   *
+   * @param {String} name "start" or "end"
    */
   _renderTimepicker(name) {
     let { ranged, time: timepicker, i18n } = this._opts

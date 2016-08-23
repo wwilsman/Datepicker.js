@@ -163,7 +163,7 @@ Enables a single time picker for non-ranged Datepickers when `true`. For ranged 
 - **`calendar:`** The actual calendar for any given month.
 - **`day:`** An individual day within the calendar.
 
-See the default templates for reference. For a list of available properties within each template see the `render()` and `getData()` methods.
+See the default templates for reference. For a list of available properties within each template context, also see the default templates.
 
 
 ## Methods
