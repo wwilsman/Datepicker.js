@@ -28,6 +28,7 @@ declare namespace Datepicker {
 		onInit(el: HTMLElement): void;
 		onChange(dt: Date | [Date, Date]): void;
 		onRender(el: HTMLElement): void;
+		onUpdate(dt: Date | Date[]): void;
 
 		// Advanced
 		// Localization
