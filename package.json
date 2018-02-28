@@ -1,8 +1,9 @@
 {
-  "name": "Datepicker.js",
+  "name": "datepicker.js",
   "version": "0.1.1",
   "description": "A pure JS datepicker",
   "main": "dist/datepicker.js",
+  "types": "src/index.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/wwilsman/Datepicker.js.git"
