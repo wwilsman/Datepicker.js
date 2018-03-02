@@ -209,7 +209,7 @@ export default class Datepicker {
 
     // if we click outside of our element, hide it
     document.addEventListener('mousedown', (e) => {
-      const rect = this.node.getBoundingClientRect();
+      const rect = this.wrapper.getBoundingClientRect();
       const cx = e.clientX;
       const cy = e.clientY;
       if (cx < rect.left || cx > rect.right || cy < rect.top || cy > rect.bottom) {
