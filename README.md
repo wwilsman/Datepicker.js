@@ -2,6 +2,24 @@
 
 See the demo [here](https://wwilsman.github.io/Datepicker.js/)
 
+<!-- TOC -->
+
+1. [Quick Start](#quick-start)
+2. [Basic Usage](#basic-usage)
+3. [Options](#options)
+	1. [Inline Datepicker](#inline-datepicker)
+	2. [Multiple Dates](#multiple-dates)
+	3. [Ranged Selection](#ranged-selection)
+	4. [Time Picker](#time-picker)
+	5. [Additional Options](#additional-options)
+		1. [Callbacks](#callbacks)
+	6. [Advanced](#advanced)
+		1. [Localization](#localization)
+		2. [Customization](#customization)
+4. [Methods](#methods)
+5. [Author](#author)
+
+<!-- /TOC -->
 
 ## Quick Start
 
@@ -24,7 +42,6 @@ Initialize Datepicker.js
 ```js
 var datepicker = new Datepicker('#datepicker');
 ```
-
 
 ## Basic Usage
 
@@ -62,33 +79,31 @@ datepicker.get('multiple');
 // => true
 ```
 
-
 ## Options
 
-#### Inline Datepicker
+### Inline Datepicker
 
 **`inline:`** (`true|false`)
 
 Best used with hidden inputs. Enabling this will render the Datepicker inline with the input and prevent show/hide functionality.
 
-#### Multiple Dates
+### Multiple Dates
 
 **`multiple:`** (`true|false`)
 
 Enables the ability for multiple dates to be selected. Clicking and dragging selects/deselects a range of dates.
 
-#### Ranged Selection
+### Ranged Selection
 
 **`ranged:`** (`true|false`)
 
 Forces the selection to a range of dates. Subsequent clicks and dragging select a new range.
 
-#### Time Picker
+### Time Picker
 
 **`time:`** (`true|false|"ranged"`)
 
 Enables a single time picker for non-ranged Datepickers when `true`. For ranged Datepickers, or when `time` is `"ranged"`, two time pickers are rendered: "start" and "end".
-
 
 ### Additional Options
 
@@ -124,7 +139,6 @@ Default `{ start: [0, 0], end: [12, 0] }`.
 **`onChange:`** (`(Date|[Date...])`) Called whenever the selected dates change or when the time or time range is updated. The currently selected date(s) are passed; start and end times are set on the respective start and end dates.
 
 **`onRender:`** (`(Element)`) Called whenever the Datepicker is rendered. The element passed is the first child from the resulting templates.
-
 
 ### Advanced
 
@@ -165,7 +179,6 @@ Default `{ start: [0, 0], end: [12, 0] }`.
 - **`day:`** An individual day within the calendar.
 
 See the default templates for reference. For a list of available properties within each template context, also see the default templates.
-
 
 ## Methods
 
