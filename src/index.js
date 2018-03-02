@@ -56,7 +56,7 @@ export default class Datepicker {
       if ('#' == elem.substr(0, 1)) {
         elem = document.getElementById(elem.substr(1))
 
-      // class/tag selector
+        // class/tag selector
       } else {
         return $$(elem).map((el) => new this.constructor(el, opts))
       }
@@ -69,7 +69,7 @@ export default class Datepicker {
 
     // make sure it's a valid input type
     if ('input' === elem.tagName.toLowerCase()
-        && !/input|hidden/i.test(elem.type)) {
+      && !/input|hidden/i.test(elem.type)) {
       elem.type = 'text'
     }
 
@@ -99,15 +99,15 @@ export default class Datepicker {
   _initOptions(opts = {}) {
     this._opts = {}
 
-    let inline = updateInline.bind(this)
-    let minMax = deserializeMinMax.bind(this)
-    let withInOut = deserializeWithinWithout.bind(this)
-    let openOn = deserializeOpenOn.bind(this)
-    let weekstart = constrainWeekstart.bind(this)
-    let defTime = defaultTimeObject.bind(this)
-    let classNames = updateClassNames.bind(this)
-    let bindFunc = bindOptionFunctions.bind(this)
-    let templates = createTemplateRenderers.bind(this)
+    const inline = updateInline.bind(this)
+    const minMax = deserializeMinMax.bind(this)
+    const withInOut = deserializeWithinWithout.bind(this)
+    const openOn = deserializeOpenOn.bind(this)
+    const weekstart = constrainWeekstart.bind(this)
+    const defTime = defaultTimeObject.bind(this)
+    const classNames = updateClassNames.bind(this)
+    const bindFunc = bindOptionFunctions.bind(this)
+    const templates = createTemplateRenderers.bind(this)
 
     // options pass through here before being set
     this._set = {
@@ -124,22 +124,22 @@ export default class Datepicker {
     }
 
     // functions
-    let fns = [ 'serialize', 'deserialize', 'onInit', 'onChange', 'onRender', 'setValue', 'getValue' ]
+    const fns = ['serialize', 'deserialize', 'onInit', 'onChange', 'onRender', 'setValue', 'getValue']
     fns.forEach((name) => this._set[name] = bindFunc)
 
     // setup renderers
     this._renderers = {
       select: tmpl([
         '<span style="position:relative"><%= text %>',
-          '<select data-<%= type %>="<%= value %>" data-index="<%= index %>"',
-              'style="position:absolute;top:0;left:0;width:100%;height:100%;margin:0;opacity:0.005;cursor:pointer;">',
-            '<% options.forEach(function(o) { %>',
-              '<option value="<%= o.value %>"',
-              '<%= o.selected ? " selected" : "" %>',
-              '<%= o.disabled ? " disabled" : "" %>',
-              '><%= o.text %></option>',
-            '<% }); %>',
-          '</select>',
+        '<select data-<%= type %>="<%= value %>" data-index="<%= index %>"',
+        'style="position:absolute;top:0;left:0;width:100%;height:100%;margin:0;opacity:0.005;cursor:pointer;">',
+        '<% options.forEach(function(o) { %>',
+        '<option value="<%= o.value %>"',
+        '<%= o.selected ? " selected" : "" %>',
+        '<%= o.disabled ? " disabled" : "" %>',
+        '><%= o.text %></option>',
+        '<% }); %>',
+        '</select>',
         '</span>'
       ].join(''))
     }
@@ -209,7 +209,12 @@ export default class Datepicker {
 
     // if we click outside of our element, hide it
     document.addEventListener('mousedown', (e) => {
-      if (!this.node.contains(e.target)) this.hide()
+      const rect = this.node.getBoundingClientRect();
+      const cx = e.clientX;
+      const cy = e.clientY;
+      if (cx < rect.left || cx > rect.right || cy < rect.top || cy > rect.bottom) {
+        this.hide();
+      }
     })
 
     // don't actually select text, please
@@ -229,7 +234,7 @@ export default class Datepicker {
    * When we mousedown on a "date node," highlight it and start the selection
    */
   _onmousedown(e) {
-    let {
+    const {
       ranged,
       multiple,
       classNames: {
@@ -238,8 +243,8 @@ export default class Datepicker {
       }
     } = this._opts
 
-    let dateNode = closest(e.target, '[data-day]', this.wrapper)
-    let date = dateNode ? parseInt(dateNode.dataset.day, 10) : null
+    const dateNode = closest(e.target, '[data-day]', this.wrapper)
+    const date = dateNode ? parseInt(dateNode.dataset.day, 10) : null
 
     if (date) {
 
@@ -262,7 +267,7 @@ export default class Datepicker {
           addClass(el, highlightedClass)
         })
 
-      // pretend we dragged here for a range
+        // pretend we dragged here for a range
       } else {
         this._onmousemove(e)
       }
@@ -273,7 +278,7 @@ export default class Datepicker {
    * We're making a selection, and we're allowed to highlight them
    */
   _onmousemove(e) {
-    let {
+    const {
       ranged,
       multiple,
       classNames: {
@@ -285,8 +290,8 @@ export default class Datepicker {
     // shouldn't select
     if (!(ranged || multiple) || e.buttons !== 1) return
 
-    let dateNode = closest(e.target, '[data-day]', this.wrapper)
-    let date = dateNode ? parseInt(dateNode.dataset.day, 10) : null
+    const dateNode = closest(e.target, '[data-day]', this.wrapper)
+    const date = dateNode ? parseInt(dateNode.dataset.day, 10) : null
 
     if (date && this._dragStart) {
       this._highlighted = dateRange(this._dragStart, date).map((d) => d.getTime())
@@ -294,7 +299,7 @@ export default class Datepicker {
 
       // reset selected & highlighted classes
       $$(`[data-day].${highlightedClass}`, this.wrapper).forEach((el) => {
-        let d = new Date(parseInt(el.dataset.day, 10))
+        const d = new Date(parseInt(el.dataset.day, 10))
         toggleClass(el, selectedClass, !ranged && this.hasDate(d))
         removeClass(el, highlightedClass)
       })
@@ -313,7 +318,7 @@ export default class Datepicker {
    * We've finished the potential selection
    */
   _onmouseup(e) {
-    let {
+    const {
       ranged,
       multiple,
       classNames: {
@@ -328,13 +333,13 @@ export default class Datepicker {
 
     // date nodes only
     if (this._dragStart && closest(e.target, '[data-day]', this.node)) {
-      let dates = this._highlighted.map((t) => new Date(t))
+      const dates = this._highlighted.map((t) => new Date(t))
 
       // ranged or not multiple, don't toggle
       if (ranged || !multiple) {
         this.setDate(dates)
 
-      // toggle
+        // toggle
       } else {
         this.toggleDate(dates, !this._deselect)
       }
@@ -361,51 +366,51 @@ export default class Datepicker {
    * What did you click?
    */
   _onclick(e) {
-    let el = e.target
+    const el = e.target
 
     // previous month
     if (el.hasAttribute('data-prev')) {
       this.prev(el.dataset.prev)
 
-    // next month
+      // next month
     } else if (el.hasAttribute('data-next')) {
       this.next(el.dataset.next)
 
-    // clicked the year select but it hasn't been bound
+      // clicked the year select but it hasn't been bound
     } else if (el.hasAttribute('data-year') && !el.onchange) {
       el.onchange = () => {
-        let c = el.dataset.year
-        let y = this._month.getFullYear()
+        const c = el.dataset.year
+        const y = this._month.getFullYear()
         this._month.setFullYear(parseInt(el.value) - (c - y))
         this.render()
       }
 
-    // clicked the month select but it hasn't been bound
+      // clicked the month select but it hasn't been bound
     } else if (el.hasAttribute('data-month') && !el.onchange) {
       el.onchange = () => {
         this._month.setMonth(el.value - el.dataset.index)
         this.render()
       }
 
-    // clicked the hour select but it hasn't been bound
+      // clicked the hour select but it hasn't been bound
     } else if (el.hasAttribute('data-hour') && !el.onchange) {
       el.onchange = () => {
         this.setTime(el.dataset.hour, el.value)
         el.parentNode.firstChild.textContent = el.selectedOptions[0].textContent
       }
 
-    // clicked the minute select but it hasn't been bound
+      // clicked the minute select but it hasn't been bound
     } else if (el.hasAttribute('data-minute') && !el.onchange) {
       el.onchange = () => {
         this.setTime(el.dataset.minute, null, el.value)
         el.parentNode.firstChild.textContent = el.selectedOptions[0].textContent
       }
 
-    // clicked the period select but it hasn't been bound
+      // clicked the period select but it hasn't been bound
     } else if (el.hasAttribute('data-period') && !el.onchange) {
       el.onchange = () => {
-        let part = el.dataset.period
-        let diff = (el.value === 'am' ? -12 : 12)
+        const part = el.dataset.period
+        const diff = (el.value === 'am' ? -12 : 12)
 
         $$(`[data-hour="${part}"] option`, this.wrapper).forEach((el) => {
           el.value = parseInt(el.value) + diff
@@ -444,7 +449,7 @@ export default class Datepicker {
       }
 
       // set remaining options
-      for (let k in key) {
+      for (const k in key) {
         this.set(k, key[k])
       }
 
@@ -454,11 +459,11 @@ export default class Datepicker {
       // return value
       val = this._opts
 
-    // set individual options
+      // set individual options
     } else {
 
       // default opts to pass to setters
-      let opts = deepExtend({}, this.constructor.defaults, this._opts)
+      const opts = deepExtend({}, this.constructor.defaults, this._opts)
 
       // fix the value
       if (key in this._set) {
@@ -514,7 +519,7 @@ export default class Datepicker {
    * @param {String|Date} [date=openOn] The date to open to
    */
   open(date) {
-    let selected = [].concat(this.getDate())
+    const selected = [].concat(this.getDate())
     date = date || this._opts.openOn || this._month
 
     // we have a string
@@ -552,10 +557,10 @@ export default class Datepicker {
     if (!this._opts.inline) {
       this.wrapper.style.display = 'block'
 
-      let nRect = this.node.getBoundingClientRect()
-      let elRect = this._el.getBoundingClientRect()
-      let elBottom = elRect.bottom - nRect.top + 'px'
-      let elTop = nRect.bottom - elRect.top + 'px'
+      const nRect = this.node.getBoundingClientRect()
+      const elRect = this._el.getBoundingClientRect()
+      const elBottom = elRect.bottom - nRect.top + 'px'
+      const elTop = nRect.bottom - elRect.top + 'px'
 
       this.wrapper.style.top = elBottom
       this.wrapper.style.right = ''
@@ -563,8 +568,8 @@ export default class Datepicker {
       this.wrapper.style.left = 0
 
       let rect = this.wrapper.getBoundingClientRect()
-      let posRight = rect.right > window.innerWidth
-      let posTop = rect.bottom > window.innerHeight
+      const posRight = rect.right > window.innerWidth
+      const posTop = rect.bottom > window.innerHeight
 
       this.wrapper.style.top = posTop ? '' : elBottom
       this.wrapper.style.right = posRight ? 0 : ''
@@ -572,8 +577,8 @@ export default class Datepicker {
       this.wrapper.style.left = posRight ? '' : 0
 
       rect = this.wrapper.getBoundingClientRect()
-      let fitLeft = rect.right >= rect.width
-      let fitTop = rect.bottom > rect.height
+      const fitLeft = rect.right >= rect.width
+      const fitTop = rect.bottom > rect.height
 
       this.wrapper.style.top = posTop && fitTop ? '' : elBottom
       this.wrapper.style.right = posRight && fitLeft ? 0 : ''
@@ -611,7 +616,7 @@ export default class Datepicker {
    * @param {Integer} [skip] How many months to skip
    */
   next(skip) {
-    let date = new Date(this._month.getTime())
+    const date = new Date(this._month.getTime())
     skip = Math.max(skip || 1, 1)
     date.setMonth(date.getMonth() + skip)
     this.goToDate(date)
@@ -624,7 +629,7 @@ export default class Datepicker {
    * @param {Integer} [skip] How many months to skip
    */
   prev(skip) {
-    let date = new Date(this._month.getTime())
+    const date = new Date(this._month.getTime())
     skip = Math.max(skip || 1, 1)
     date.setMonth(date.getMonth() - skip)
     this.goToDate(date)
@@ -686,7 +691,7 @@ export default class Datepicker {
    * @param {Boolean} [force] Force to selected/deselected
    */
   toggleDate(date, force) {
-    let { ranged, multiple, deserialize } = this._opts
+    const { ranged, multiple, deserialize } = this._opts
     let dates = [].concat(date)
 
     // deserialize
@@ -700,15 +705,15 @@ export default class Datepicker {
       dates = dates.concat(this.getDate()).sort(compareDates)
       dates = dates.length ? dateRange(dates[0], dates.pop()) : []
 
-    // there can only be one
+      // there can only be one
     } else if (!multiple) {
       dates = dates.slice(0, 1)
     }
 
     // loop over date times
     dates.map((d) => setToStart(d).getTime()).forEach((t) => {
-      let index = this._selected.indexOf(t)
-      let hasDate = index > -1
+      const index = this._selected.indexOf(t)
+      const hasDate = index > -1
 
       // add the date
       if (!hasDate && force !== false) {
@@ -720,7 +725,7 @@ export default class Datepicker {
           this._selected = [t]
         }
 
-      // remove the date
+        // remove the date
       } else if (hasDate && force !== true) {
         this._selected.splice(index, 1)
       }
@@ -734,7 +739,7 @@ export default class Datepicker {
    * Update the attached element and call onChange
    */
   _update() {
-    let { onChange } = this._opts
+    const { onChange } = this._opts
 
     // update the element
     if (this._el.nodeName.toLowerCase() === 'input') {
@@ -755,8 +760,8 @@ export default class Datepicker {
    * @return {Date|Array}
    */
   getDate() {
-    let { ranged, multiple, time } = this._opts
-    let start = this._time ? this._time.start : [0, 0]
+    const { ranged, multiple, time } = this._opts
+    const start = this._time ? this._time.start : [0, 0]
 
     this._selected = (this._selected || []).sort()
 
@@ -764,14 +769,14 @@ export default class Datepicker {
     if (multiple || ranged) {
 
       // to dates
-      let sel = this._selected.map((t) => new Date(t))
+      const sel = this._selected.map((t) => new Date(t))
 
       // set time
       if (time && sel.length) {
         sel[0].setHours(start[0], start[1])
 
         if (sel.length > 1) {
-          let end = this._time ? this._time.end : [0, 0]
+          const end = this._time ? this._time.end : [0, 0]
           sel[sel.length - 1].setHours(end[0], end[1])
         }
       }
@@ -782,7 +787,7 @@ export default class Datepicker {
 
     // correct time and return date
     if (this._selected.length) {
-      let d = new Date(this._selected[0])
+      const d = new Date(this._selected[0])
       d.setHours(start[0], start[1])
       return d
     }
@@ -806,7 +811,7 @@ export default class Datepicker {
    * @param {Integer} minute Value between 0 and 59 representing the minute
    */
   setTime(part, hour, minute) {
-    let { time, defaultTime } = this._opts
+    const { time, defaultTime } = this._opts
 
     if (!time) return
 
@@ -850,7 +855,7 @@ export default class Datepicker {
    * @return {String} The string value
    */
   getValue() {
-    let { ranged, separator, serialize, toValue } = this._opts
+    const { ranged, separator, serialize, toValue } = this._opts
     let selected = [].concat(this.getDate() || [])
 
     if (ranged && selected.length > 1) {
@@ -872,10 +877,10 @@ export default class Datepicker {
    * @param {String} value The string value
    */
   setValue(val) {
-    let { ranged, time, separator, serialize, fromValue } = this._opts
+    const { ranged, time, separator, serialize, fromValue } = this._opts
     this._selected = []
 
-    let dates = fromValue ? fromValue(val) :
+    const dates = fromValue ? fromValue(val) :
       val.split(separator).filter(Boolean).map(serialize)
 
     // set dates
@@ -883,11 +888,11 @@ export default class Datepicker {
 
     // set time
     if (time && dates.length) {
-      let start = dates.sort(compareDates)[0]
+      const start = dates.sort(compareDates)[0]
       this.setTime('start', start.getHours(), start.getMinutes())
 
       if (time === 'ranged' || ranged) {
-        let end = dates[dates.length - 1]
+        const end = dates[dates.length - 1]
         this.setTime('end', end.getHours(), end.getMinutes())
       }
     }
@@ -901,7 +906,7 @@ export default class Datepicker {
    * @return {Boolean} Whether the date is allowed or not
    */
   dateAllowed(date, dim) {
-    let { min, max, within, without, deserialize } = this._opts
+    const { min, max, within, without, deserialize } = this._opts
     let belowMax, aboveMin = belowMax = true
 
     date = setToStart(isValidDate(date) ? date : deserialize(date))
@@ -926,14 +931,14 @@ export default class Datepicker {
    * Render the calendar HTML
    */
   render() {
-    let { ranged, time, onRender } = this._opts
+    const { ranged, time, onRender } = this._opts
 
     // don't render
     if (this._noRender || !this._renderers) return
 
     // avoid duplicate calls to getData
-    let renderCache = {}
-    let getData = (i) => renderCache[i] || (renderCache[i] = this.getData(i))
+    const renderCache = {}
+    const getData = (i) => renderCache[i] || (renderCache[i] = this.getData(i))
 
     // render html
     this.wrapper.innerHTML = this._renderers.container({
@@ -943,9 +948,10 @@ export default class Datepicker {
 
       // render calendar
       renderCalendar: (i = 0) => {
-        let data = getData(i)
+        const data = getData(i)
 
-        return this._renderers.calendar({ ...data,
+        return this._renderers.calendar({
+          ...data,
 
           // render header within calendar
           renderHeader: () => this._renderHeader(data),
@@ -984,7 +990,7 @@ export default class Datepicker {
    * @return {Object} Object containing data for the calendar month
    */
   getData(index = 0) {
-    let {
+    const {
       i18n,
       weekStart,
       serialize,
@@ -999,23 +1005,23 @@ export default class Datepicker {
       }
     } = this._opts
 
-    let date = new Date(this._month.getTime())
+    const date = new Date(this._month.getTime())
     date.setMonth(date.getMonth() + index)
 
-    let month = date.getMonth()
-    let year = date.getFullYear()
+    const month = date.getMonth()
+    const year = date.getFullYear()
 
     // get next/prev month to determine if they're allowed
-    let nextMonth = new Date(date.getTime())
+    const nextMonth = new Date(date.getTime())
     nextMonth.setMonth(nextMonth.getMonth() + 1)
     nextMonth.setDate(1)
 
-    let prevMonth = new Date(date.getTime())
+    const prevMonth = new Date(date.getTime())
     prevMonth.setMonth(prevMonth.getMonth() - 1)
     prevMonth.setDate(getDaysInMonth(prevMonth))
 
     // collect the days' data
-    let days = []
+    const days = []
 
     // setup the start day
     let start = date.getDay() - weekStart
@@ -1026,24 +1032,24 @@ export default class Datepicker {
     while (dayCount % 7) dayCount += 1
 
     // today!
-    let today = setToStart(new Date())
+    const today = setToStart(new Date())
 
     // loop through the calendar days
     for (let i = 0; i < dayCount; i++) {
-      let day = new Date(year, month, 1 + (i - start))
-      let dayMonth = day.getMonth()
-      let weekday = day.getDay()
+      const day = new Date(year, month, 1 + (i - start))
+      const dayMonth = day.getMonth()
+      const weekday = day.getDay()
 
-      let isSelected = this.hasDate(day)
-      let isDisabled = !this.dateAllowed(day)
-      let isPrevMonth = dayMonth < month
-      let isNextMonth = dayMonth > month
-      let isThisMonth = !isPrevMonth && !isNextMonth
-      let isWeekend = (weekday === 0 || weekday === 6)
-      let isToday = day.getTime() === today.getTime()
+      const isSelected = this.hasDate(day)
+      const isDisabled = !this.dateAllowed(day)
+      const isPrevMonth = dayMonth < month
+      const isNextMonth = dayMonth > month
+      const isThisMonth = !isPrevMonth && !isNextMonth
+      const isWeekend = (weekday === 0 || weekday === 6)
+      const isToday = day.getTime() === today.getTime()
 
       // classNames
-      let classNames = []
+      const classNames = []
       if (isSelected) classNames.push(selectedClass)
       if (isDisabled) classNames.push(disabledClass)
       if (!isThisMonth) classNames.push(otherMonthClass)
@@ -1093,16 +1099,17 @@ export default class Datepicker {
    * @return {String} HTML for the calendar header
    */
   _renderHeader(data) {
-    let { yearRange, i18n } = this._opts
-    let { _date, index, year } = data
-    let month = _date.getMonth()
+    const { yearRange, i18n } = this._opts
+    const { _date, index, year } = data
+    const month = _date.getMonth()
 
-    return this._renderers.header({ ...data,
+    return this._renderers.header({
+      ...data,
 
       // render month select
       renderMonthSelect: (i = index) => {
-        let d = new Date(_date.getTime())
-        let options = []
+        const d = new Date(_date.getTime())
+        const options = []
 
         for (let m = 0; m < 12; m++) {
           d.setMonth(m)
@@ -1126,10 +1133,10 @@ export default class Datepicker {
 
       // render year select
       renderYearSelect: (i = index) => {
-        let d = new Date(_date.getTime())
+        const d = new Date(_date.getTime())
         let y = year - yearRange
-        let max = year + yearRange
-        let options = []
+        const max = year + yearRange
+        const options = []
 
         for (; y <= max; y++) {
           d.setFullYear(y)
@@ -1159,7 +1166,7 @@ export default class Datepicker {
    * @param {String} name "start" or "end"
    */
   _renderTimepicker(name) {
-    let { ranged, time: timepicker, i18n } = this._opts
+    const { ranged, time: timepicker, i18n } = this._opts
 
     if (!timepicker) return
 
@@ -1167,7 +1174,7 @@ export default class Datepicker {
       this.setTime(true)
     }
 
-    let time = this._time[name]
+    const time = this._time[name]
     let label = i18n.time[0]
 
     if (timepicker === 'ranged' || ranged) {
@@ -1178,10 +1185,10 @@ export default class Datepicker {
       label,
 
       renderHourSelect: (long = false) => {
-        let options = []
+        const options = []
 
-        let hour = time[0]
-        let end = long ? 24 : 12
+        const hour = time[0]
+        const end = long ? 24 : 12
 
         for (let h = 0; h < end; h++) {
           options.push({
@@ -1198,7 +1205,7 @@ export default class Datepicker {
           options.push(options.shift())
         }
 
-        let text = options.filter((o) => o.selected)[0].text
+        const text = options.filter((o) => o.selected)[0].text
 
         return this._renderers.select({
           index: 0,
@@ -1210,7 +1217,7 @@ export default class Datepicker {
       },
 
       renderMinuteSelect: (incr = 15) => {
-        let options = []
+        const options = []
 
         for (let i = 0; i < 60; i += incr) {
           options.push({
@@ -1221,7 +1228,7 @@ export default class Datepicker {
           })
         }
 
-        let text = options.filter((o) => o.selected)[0].text
+        const text = options.filter((o) => o.selected)[0].text
 
         return this._renderers.select({
           index: null,
